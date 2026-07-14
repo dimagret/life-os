@@ -1,0 +1,72 @@
+.mobileSurface {
+  overflow: hidden;
+  border-radius: 18px;
+  padding-inline: 4px;
+}
+
+.mobileItem,
+.sidebarItem {
+  position: relative;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.mobileItem {
+  border-radius: 0 !important;
+}
+
+.mobileItem::before {
+  position: absolute;
+  top: 5px;
+  left: 32%;
+  right: 32%;
+  height: 3px;
+  border-radius: 9999px;
+  background: var(--state-color);
+  content: '';
+  opacity: 0;
+  transform: scaleX(0.5);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.mobileItem.active::before {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.iconWrap {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.sidebarItem {
+  border-radius: 10px !important;
+}
+
+.sidebarItem::before {
+  position: absolute;
+  top: 9px;
+  bottom: 9px;
+  left: 0;
+  width: 2px;
+  border-radius: 0 2px 2px 0;
+  background: var(--state-color);
+  content: '';
+  opacity: 0;
+  transform: scaleY(0.5);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.sidebarItem.active::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobileItem::before,
+  .sidebarItem::before {
+    transition: none;
+  }
+}

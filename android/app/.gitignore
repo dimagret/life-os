@@ -1,0 +1,5 @@
+/build/*
+!/build/.npmkeep
+
+# Генерируется npm run sync-android-version (SSOT — package.json)
+version.properties

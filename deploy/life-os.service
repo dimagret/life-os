@@ -1,0 +1,31 @@
+[Unit]
+Description=Life OS Next.js Application
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/life-os
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOSTNAME=127.0.0.1
+
+EnvironmentFile=/var/www/life-os/.env.local
+ExecStartPre=/usr/bin/node /var/www/life-os/scripts/check-vps-env.mjs
+ExecStart=/usr/bin/node /var/www/life-os/.next/standalone/server.js
+
+Restart=on-failure
+RestartSec=10
+
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/www/life-os /var/log/life-os
+
+StandardOutput=append:/var/log/life-os/app.log
+StandardError=append:/var/log/life-os/error.log
+
+[Install]
+WantedBy=multi-user.target

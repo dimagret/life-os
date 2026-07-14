@@ -1,0 +1,360 @@
+:global(html[data-theme="dark"]):has(.theme) {
+  color-scheme: dark;
+  --bg-primary: #07070c;
+  --bg-secondary: #10111a;
+  --bg-elevated: #171722;
+  --bg-hover: #1d1b2a;
+  --bg-sunken: #050509;
+  --surface-card: rgba(14, 14, 23, 0.88);
+  --surface-panel: rgba(12, 12, 20, 0.92);
+  --surface-inset: rgba(4, 4, 9, 0.72);
+  --app-bg: radial-gradient(circle at 56% -12%, rgba(123, 100, 194, 0.14), transparent 34%), #07070c;
+  --border-subtle: rgba(211, 203, 255, 0.14);
+  --border-strong: rgba(211, 203, 255, 0.24);
+  --border-focus: #d7ccff;
+  --text-primary: #f4f0ff;
+  --text-secondary: #cfc9e3;
+  --text-muted: #8f88a3;
+  --text-disabled: #625c72;
+  --text-inverse: #08070d;
+  --accent-brand: #bca7ff;
+  --accent-brand-strong: #d7ccff;
+  --accent-brand-soft: rgba(188, 167, 255, 0.13);
+  --accent-brand-border: rgba(188, 167, 255, 0.34);
+  --signal-cyan: #bca7ff;
+  --signal-cyan-strong: #d7ccff;
+  --signal-cyan-soft: rgba(188, 167, 255, 0.1);
+  --signal-cyan-border: rgba(188, 167, 255, 0.28);
+  --signal-blue: #a999dc;
+  --signal-blue-soft: rgba(169, 153, 220, 0.11);
+  --signal-violet: #bca7ff;
+  --signal-violet-soft: rgba(188, 167, 255, 0.13);
+  --signal-gradient: linear-gradient(135deg, #a999dc, #bca7ff);
+  --state-control: #bca7ff;
+  --state-control-soft: rgba(188, 167, 255, 0.12);
+  --state-control-border: rgba(188, 167, 255, 0.32);
+  --state-hold: #9b8cc9;
+  --state-hold-secondary: #c7b5ff;
+  --state-hold-soft: rgba(155, 140, 201, 0.12);
+  --state-hold-border: rgba(155, 140, 201, 0.3);
+  --state-risk: #c8a56d;
+  --state-risk-strong: #e0c28f;
+  --state-risk-soft: rgba(200, 165, 109, 0.12);
+  --state-risk-border: rgba(200, 165, 109, 0.3);
+  --state-stabilization: #bd7567;
+  --state-stabilization-strong: #dca092;
+  --state-stabilization-soft: rgba(189, 117, 103, 0.12);
+  --state-stabilization-border: rgba(189, 117, 103, 0.3);
+  --state-recovery: #77ae9f;
+  --state-recovery-strong: #a8d2c7;
+  --state-recovery-soft: rgba(119, 174, 159, 0.12);
+  --state-recovery-border: rgba(119, 174, 159, 0.3);
+  --state-victory: #83b58d;
+  --state-victory-strong: #b1d5b8;
+  --state-victory-soft: rgba(131, 181, 141, 0.12);
+  --state-victory-border: rgba(131, 181, 141, 0.3);
+  --state-deception: #b86579;
+  --state-deception-strong: #d58fa0;
+  --state-deception-soft: rgba(184, 101, 121, 0.12);
+  --state-deception-border: rgba(184, 101, 121, 0.3);
+  --shadow-soft: 0 20px 54px rgba(0, 0, 0, 0.28);
+  --shadow-card: 0 14px 38px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  --shadow-raised: 0 10px 24px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.48);
+  --shadow-glow: 0 0 28px rgba(188, 167, 255, 0.14);
+}
+
+:global(html):has(.theme) :global(body) {
+  background: var(--app-bg);
+  font-family: "Segoe UI Variable Text", "Aptos", system-ui, sans-serif;
+}
+
+.theme {
+  min-width: 0;
+  min-height: 100dvh;
+  color: var(--text-primary);
+  background: var(--app-bg);
+  font-family: "Segoe UI Variable Text", "Aptos", system-ui, sans-serif;
+}
+
+.theme::before {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  content: "";
+  opacity: 0.14;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.92' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.09'/%3E%3C/svg%3E");
+}
+
+:global(html[data-theme="light"]):has(.theme) .theme::before {
+  display: none;
+}
+
+.theme :global(.app-page) {
+  max-width: 44rem;
+  padding: clamp(20px, 4vw, 36px) 20px 104px;
+}
+
+.theme :global(.app-page > header) {
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.theme :global(.app-page h1) {
+  font-family: "Segoe UI Variable Display", "Aptos Display", system-ui, sans-serif;
+  font-weight: 720;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.theme :global(.app-page h2),
+.theme :global(.app-page h3) {
+  font-family: "Segoe UI Variable Display", "Aptos Display", system-ui, sans-serif;
+  letter-spacing: -0.018em;
+  text-wrap: balance;
+}
+
+.theme :global(.nav-surface) {
+  border-color: var(--border-subtle);
+  background: color-mix(in srgb, var(--surface-panel) 96%, transparent);
+  box-shadow: inset -1px 0 0 var(--border-subtle);
+  backdrop-filter: blur(20px);
+}
+
+.theme :global(.nav-surface [data-active="true"]) {
+  color: var(--state-color);
+  background: var(--state-soft);
+  box-shadow: inset 0 0 0 1px var(--state-border), var(--shadow-raised);
+}
+
+.theme :global(.nav-surface [data-active="true"] > span:first-child) {
+  color: var(--state-color);
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.theme :global(.nav-surface [data-active="true"] svg),
+.theme :global(.nav-surface [data-active="true"] > span:last-child) {
+  color: var(--state-color);
+}
+
+.theme :global(.tactile-card),
+.theme :global(.tactile-panel),
+.theme :global([data-slot="card"]),
+.theme :global(.mentor-card),
+.theme :global(.stat-strip) {
+  border-color: var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: none;
+}
+
+.theme :global(.tactile-inset),
+.theme :global(.stat-pill),
+.theme :global(.status-capsule),
+.theme :global(.status-meter-summary),
+.theme :global(.status-meter-row) {
+  border-color: var(--border-subtle);
+  background: var(--surface-inset);
+  box-shadow: none;
+}
+
+.theme :global(.tactile-chip) {
+  min-height: 26px;
+  border-color: var(--border-subtle);
+  border-radius: 8px;
+  background: var(--accent-brand-soft);
+  box-shadow: none;
+}
+
+.theme :global(.tactile-field),
+.theme :global(input:not([type="checkbox"]):not([type="radio"])),
+.theme :global(textarea),
+.theme :global(select) {
+  border-color: var(--border-subtle);
+  border-radius: 11px;
+  color: var(--text-primary);
+  background: var(--bg-sunken);
+  box-shadow: var(--shadow-inset);
+}
+
+.theme :global(input::placeholder),
+.theme :global(textarea::placeholder) {
+  color: var(--text-disabled);
+}
+
+.theme :global(.tactile-button),
+.theme :global(button) {
+  border-radius: 11px;
+}
+
+.theme :global(.tactile-button-primary) {
+  border: 1px solid var(--state-border);
+  color: var(--text-inverse);
+  background: var(--state-color);
+  box-shadow: var(--shadow-raised);
+}
+
+.theme :global(.tactile-button-primary):hover {
+  filter: brightness(0.96);
+  transform: translateY(-1px);
+}
+
+.theme :global(.tactile-button-secondary) {
+  border-color: var(--border-subtle);
+  color: var(--text-secondary);
+  background: var(--surface-card);
+  box-shadow: none;
+}
+
+.theme :global(.selection-control) {
+  --selection-color: var(--state-color);
+  --selection-soft: var(--state-soft);
+  --selection-border: var(--state-border);
+  min-height: 44px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  color: var(--text-secondary);
+  background: var(--surface-card);
+  box-shadow: none;
+  opacity: 1;
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.theme :global(.selection-control:hover:not(:disabled)) {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+}
+
+.theme :global(.selection-control[aria-checked="true"]),
+.theme :global(.selection-control[aria-pressed="true"]) {
+  border-color: var(--selection-border);
+  color: var(--selection-color);
+  background: var(--selection-soft);
+  box-shadow: inset 2px 0 0 var(--selection-color);
+}
+
+.theme :global(.selection-control[data-selection-tone="completed"]) {
+  --selection-color: var(--state-victory);
+  --selection-soft: var(--state-victory-soft);
+  --selection-border: var(--state-victory-border);
+}
+
+.theme :global(.selection-control[data-selection-tone="partial"]),
+.theme :global(.selection-control[data-selection-tone="risk"]) {
+  --selection-color: var(--state-risk);
+  --selection-soft: var(--state-risk-soft);
+  --selection-border: var(--state-risk-border);
+}
+
+.theme :global(.selection-control[data-selection-tone="failed"]) {
+  --selection-color: var(--state-deception);
+  --selection-soft: var(--state-deception-soft);
+  --selection-border: var(--state-deception-border);
+}
+
+.theme :global(.selection-control:active:not(:disabled)) {
+  transform: scale(0.99);
+}
+
+.theme :global(.selection-control:disabled) {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.theme :global(.mentor-card) {
+  border-left: 2px solid var(--state-color);
+  background: var(--surface-card);
+}
+
+.theme :global(.mentor-icon-tile) {
+  border-color: var(--border-subtle);
+  border-radius: 10px;
+  background: var(--accent-brand-soft);
+  box-shadow: none;
+}
+
+.theme :global(.status-orbit-card)::before {
+  display: none;
+}
+
+.theme :global(.status-meter-summary)::before {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.theme :global(.status-meter-signal) {
+  border-radius: 10px;
+}
+
+.theme :global(.status-meter-signal)::after {
+  border-radius: 3px;
+  animation: none;
+}
+
+.theme :global(.status-meter-row[data-tone="core"]) {
+  --meter-tone: var(--accent-brand);
+}
+
+.theme :global(.status-meter-row[data-tone="abyss"]) {
+  --meter-tone: var(--state-deception);
+}
+
+.theme :global(.status-meter-track),
+.theme :global(.status-meter-fill) {
+  border-radius: 2px;
+}
+
+.theme :global(.status-meter-track) {
+  height: 5px;
+}
+
+.theme :global(.focus-immersive-page) {
+  background: var(--app-bg);
+}
+
+.theme :global(.focus-visual-stage),
+.theme :global(.focus-detail-card),
+.theme :global(.focus-context-card) {
+  border-color: var(--border-subtle);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-card);
+}
+
+.theme :global(.focus-primary-button) {
+  color: var(--text-inverse);
+  background: var(--state-color);
+  box-shadow: var(--shadow-raised);
+}
+
+.theme :global(details) {
+  border-color: var(--border-subtle);
+  background: var(--surface-card);
+}
+
+.theme :global(hr) {
+  border-color: var(--border-subtle);
+}
+
+@media (min-width: 1024px) {
+  .theme :global(.app-page) {
+    padding-bottom: 40px;
+  }
+}
+
+@media (max-width: 520px) {
+  .theme :global(.app-page) {
+    padding-top: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme :global(*) {
+    scroll-behavior: auto;
+  }
+}
+
+
+

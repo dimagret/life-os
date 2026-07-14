@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Совпадает с SplashScreen.backgroundColor в capacitor.config.ts и CapacitorBridge / viewport -->
+    <color name="splash_background">#0B0D12</color>
+</resources>

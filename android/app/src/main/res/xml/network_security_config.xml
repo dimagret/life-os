@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Prod / release: без cleartext. -->
+    <base-config cleartextTrafficPermitted="false" />
+    <!-- Debug-сборки: разрешить HTTP (LAN, локальный backend). Release не затрагивается. -->
+    <debug-overrides cleartextTrafficPermitted="true" />
+</network-security-config>

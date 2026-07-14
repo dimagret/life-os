@@ -1,0 +1,131 @@
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import {
+  DEFAULT_YANDEX_MUSIC_EMBED_URL,
+  getFocusMusicUrlIssue,
+  getYandexMusicEmbedHeight,
+  getYandexMusicEmbedIssue,
+  normalizeYandexMusicEmbedUrl,
+  openYandexMusicPage,
+  playFocusMusic,
+  YANDEX_MUSIC_OPEN_URL,
+} from '@/lib/focusMusic';
+import type { UserProfile } from '@/types';
+
+describe('getFocusMusicUrlIssue', () => {
+  it('allows direct audio-like URLs', () => {
+    expect(getFocusMusicUrlIssue('https://cdn.example.com/focus.mp3')).toBeNull();
+    expect(getFocusMusicUrlIssue('https://radio.example.com/live/stream')).toBeNull();
+  });
+
+  it('rejects empty and malformed URLs', () => {
+    expect(getFocusMusicUrlIssue('')).toBe('empty');
+    expect(getFocusMusicUrlIssue('not a url')).toBe('invalid');
+    expect(getFocusMusicUrlIssue('ftp://example.com/focus.mp3')).toBe('invalid');
+  });
+
+  it('rejects music service page links', () => {
+    expect(getFocusMusicUrlIssue('https://music.yandex.ru/album/8102024/track/55436076')).toBe('pageLink');
+    expect(getFocusMusicUrlIssue('https://music.yandex.ru/iframe/#track/55436076/8102024')).toBe('pageLink');
+    expect(getFocusMusicUrlIssue('https://www.youtube.com/watch?v=abc')).toBe('pageLink');
+    expect(getFocusMusicUrlIssue('https://open.spotify.com/track/abc')).toBe('pageLink');
+  });
+});
+
+describe('Yandex Music iframe helpers', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('accepts only official Yandex Music iframe URLs for the shell', () => {
+    expect(getYandexMusicEmbedIssue(DEFAULT_YANDEX_MUSIC_EMBED_URL)).toBeNull();
+    expect(getYandexMusicEmbedIssue('https://music.yandex.ru/iframe/album/8102024/track/55436076')).toBeNull();
+    expect(getYandexMusicEmbedIssue('https://music.yandex.ru/iframe/playlist/user-name/123')).toBeNull();
+    expect(getYandexMusicEmbedIssue('https://music.yandex.ru/iframe/#track/55436076/8102024')).toBeNull();
+    expect(getYandexMusicEmbedIssue('https://music.yandex.ru/album/8102024/track/55436076')).toBe('invalid');
+    expect(getYandexMusicEmbedIssue('https://example.com/iframe/#track/55436076/8102024')).toBe('invalid');
+  });
+
+  it('normalizes Yandex Music page links to iframe URLs', () => {
+    expect(normalizeYandexMusicEmbedUrl('https://music.yandex.ru/album/8102024/track/55436076?utm_source=share')).toBe(
+      'https://music.yandex.ru/iframe/#track/55436076/8102024'
+    );
+    expect(normalizeYandexMusicEmbedUrl('https://music.yandex.ru/album/8102024')).toBe(
+      'https://music.yandex.ru/iframe/#album/8102024'
+    );
+    expect(normalizeYandexMusicEmbedUrl('https://music.yandex.ru/iframe/#track/55436076/8102024')).toBe(
+      'https://music.yandex.ru/iframe/#track/55436076/8102024'
+    );
+  });
+
+  it('uses taller iframe shells for playlist and album embeds', () => {
+    expect(getYandexMusicEmbedHeight(DEFAULT_YANDEX_MUSIC_EMBED_URL)).toBe(450);
+    expect(getYandexMusicEmbedHeight('https://music.yandex.ru/iframe/album/8102024/track/55436076')).toBe(244);
+    expect(getYandexMusicEmbedHeight('https://music.yandex.ru/iframe/#track/55436076/8102024')).toBe(180);
+  });
+
+  it('does not create an Audio element for Yandex Music shell mode', async () => {
+    const AudioMock = vi.fn();
+    vi.stubGlobal('window', {
+      clearInterval: vi.fn(),
+      clearTimeout: vi.fn(),
+    });
+    vi.stubGlobal('Audio', AudioMock);
+
+    const started = await playFocusMusic({
+      id: 'user_test',
+      createdAt: new Date().toISOString(),
+      onboardingCompleted: true,
+      skippedOnboarding: false,
+      contractAccepted: true,
+      strictnessMode: 'standard',
+      level: 1,
+      totalXp: 0,
+      innerCore: 0,
+      abyssIndex: 0,
+      currentStreak: 0,
+      activeStabilization: false,
+      externalResultsCount: 0,
+      focusMusicEnabled: true,
+      focusMusicSource: 'yandex',
+      focusYandexEmbedUrl: 'https://music.yandex.ru/iframe/album/8102024/track/55436076',
+    } satisfies UserProfile);
+
+    expect(started).toBe(false);
+    expect(AudioMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('openYandexMusicPage', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('opens Yandex Music in a new tab when the browser allows it', () => {
+    const openedWindow = { opener: {} as unknown };
+    const assign = vi.fn();
+    const open = vi.fn(() => openedWindow);
+
+    vi.stubGlobal('window', {
+      open,
+      location: { assign },
+    });
+
+    expect(openYandexMusicPage()).toBe(true);
+    expect(open).toHaveBeenCalledWith(YANDEX_MUSIC_OPEN_URL, '_blank');
+    expect(openedWindow.opener).toBeNull();
+    expect(assign).not.toHaveBeenCalled();
+  });
+
+  it('falls back to same-tab navigation when a browser shell blocks the popup', () => {
+    const assign = vi.fn();
+    const open = vi.fn(() => null);
+
+    vi.stubGlobal('window', {
+      open,
+      location: { assign },
+    });
+
+    expect(openYandexMusicPage()).toBe(false);
+    expect(assign).toHaveBeenCalledWith(YANDEX_MUSIC_OPEN_URL);
+  });
+});

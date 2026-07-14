@@ -1,0 +1,427 @@
+.commandCard {
+  overflow: hidden;
+  border: 1px solid var(--state-border);
+  border-radius: 16px;
+  padding: 16px;
+  color: var(--text-primary);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--state-soft) 66%, transparent), transparent 56%),
+    var(--surface-card);
+  box-shadow: var(--shadow-card);
+}
+
+.topline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.kicker {
+  color: var(--state-color);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.11em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.progressCopy {
+  margin-top: 3px;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.25;
+}
+
+.progressValue {
+  color: var(--state-color);
+  font-family: ui-monospace, "Cascadia Code", monospace;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.progressTrack {
+  position: relative;
+  height: 4px;
+  margin-top: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--state-color) 14%, var(--surface-inset));
+}
+
+.progressFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--state-color);
+  transition: width 180ms ease;
+}
+
+.resultBlock {
+  margin-top: 13px;
+}
+
+.resultHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.resultLabel,
+.detailLabel {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.09em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.editButton {
+  min-height: 36px;
+  flex: 0 0 auto;
+  border-radius: 7px;
+  padding: 4px 7px;
+  color: var(--state-color);
+  font-size: 11px;
+  font-weight: 650;
+  transition: background-color 140ms ease, opacity 140ms ease;
+}
+
+.editButton:hover {
+  background: var(--state-soft);
+}
+
+.mainResult {
+  display: -webkit-box;
+  margin-top: 5px;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.38;
+  text-wrap: pretty;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.editForm {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.secondaryButton,
+.saveButton {
+  min-height: 40px;
+  border-radius: 9px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.secondaryButton {
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  background: var(--surface-inset);
+}
+
+.saveButton {
+  border: 1px solid var(--state-border);
+  color: var(--text-inverse);
+  background: var(--state-color);
+}
+
+.saveButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.primaryAction {
+  display: flex;
+  min-height: 58px;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 14px;
+  border: 1px solid color-mix(in srgb, var(--state-color) 76%, var(--border-strong));
+  border-radius: 12px;
+  padding: 10px 11px 10px 14px;
+  color: var(--text-inverse);
+  text-align: left;
+  background: var(--state-color);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--state-color) 18%, transparent);
+  transition: transform 140ms ease, filter 140ms ease, box-shadow 140ms ease;
+}
+
+.primaryAction:hover {
+  filter: brightness(1.04);
+  transform: translateY(-1px);
+}
+
+.primaryAction:active {
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--state-color) 16%, transparent);
+  transform: translateY(1px) scale(0.995);
+}
+
+.primaryAction:focus-visible,
+.stepRow:focus-visible,
+.detailsToggle:focus-visible,
+.editButton:focus-visible,
+.secondaryButton:focus-visible,
+.saveButton:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.primaryCopy {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.primaryCopy strong {
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.primaryCopy span {
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 560;
+  line-height: 1.3;
+  opacity: 0.78;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.primaryIcon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--text-inverse) 8%, transparent);
+}
+
+.stepList {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+  list-style: none;
+}
+
+.stepRow {
+  display: grid;
+  min-height: 48px;
+  width: 100%;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 7px 9px;
+  color: var(--text-secondary);
+  text-align: left;
+  background: var(--surface-card);
+  transition: border-color 140ms ease, background-color 140ms ease, transform 140ms ease;
+}
+
+.stepRow:not(:disabled):hover {
+  border-color: var(--state-border);
+  background: color-mix(in srgb, var(--state-soft) 60%, var(--surface-card));
+}
+
+.stepRow:not(:disabled):active {
+  transform: scale(0.995);
+}
+
+.stepRow[data-current="true"] {
+  border-color: var(--state-border);
+  background: color-mix(in srgb, var(--state-soft) 70%, var(--surface-card));
+  box-shadow: inset 2px 0 0 var(--state-color);
+}
+
+.stepRow:disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.stepIndex {
+  color: var(--state-color);
+  font-family: ui-monospace, "Cascadia Code", monospace;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.stepBody {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.stepPeriod {
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.stepTask {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 590;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stepStatus {
+  max-width: 96px;
+  overflow: hidden;
+  border: 1px solid var(--state-border);
+  border-radius: 7px;
+  padding: 3px 6px;
+  color: var(--state-color);
+  background: var(--state-soft);
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stepRow[data-status="completed"] .stepStatus,
+.stepRow[data-status="partial"] .stepStatus {
+  border-color: var(--state-victory-border);
+  color: var(--state-victory);
+  background: var(--state-victory-soft);
+}
+
+.stepRow[data-status="failed"] .stepStatus {
+  border-color: color-mix(in srgb, var(--state-deception) 38%, transparent);
+  color: var(--state-deception);
+  background: var(--state-deception-soft);
+}
+
+.detailsToggle {
+  display: flex;
+  min-height: 44px;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  border-radius: 9px;
+  padding: 8px 2px 4px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 650;
+  transition: color 140ms ease;
+}
+
+.detailsToggle:hover {
+  color: var(--text-secondary);
+}
+
+.chevron {
+  transition: transform 160ms ease;
+}
+
+.chevron[data-open="true"] {
+  transform: rotate(180deg);
+}
+
+.detailsPanel {
+  display: grid;
+  gap: 14px;
+  margin-top: 6px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 14px;
+}
+
+.detailsPanel[hidden] {
+  display: none;
+}
+
+.detailBlock {
+  min-width: 0;
+}
+
+.detailBlock p {
+  margin-top: 4px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 16px;
+}
+
+@media (max-width: 460px) {
+  .commandCard {
+    border-radius: 14px;
+    padding: 14px;
+  }
+
+  .mainResult {
+    font-size: 14px;
+    -webkit-line-clamp: 2;
+  }
+
+  .primaryAction {
+    min-height: 56px;
+    margin-top: 12px;
+  }
+
+  .stepList {
+    gap: 5px;
+    margin-top: 10px;
+  }
+
+  .stepRow {
+    min-height: 46px;
+    grid-template-columns: 26px minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 6px 8px;
+  }
+
+  .stepStatus {
+    max-width: 78px;
+    padding-inline: 5px;
+  }
+
+  .detailGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progressFill,
+  .primaryAction,
+  .stepRow,
+  .chevron {
+    transition: none;
+  }
+}

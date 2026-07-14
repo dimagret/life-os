@@ -1,0 +1,478 @@
+:global(html[data-theme="dark"]):has(.shell) {
+  color-scheme: dark;
+  --bg-primary: #07070c;
+  --bg-secondary: #10111a;
+  --bg-elevated: #171722;
+  --bg-hover: #1d1b2a;
+  --bg-sunken: #050509;
+  --surface-card: rgba(14, 14, 23, 0.88);
+  --surface-panel: rgba(12, 12, 20, 0.92);
+  --surface-inset: rgba(4, 4, 9, 0.7);
+  --app-bg: radial-gradient(circle at 56% -12%, rgba(123, 100, 194, 0.14), transparent 34%), #07070c;
+  --border-subtle: rgba(211, 203, 255, 0.14);
+  --border-strong: rgba(211, 203, 255, 0.24);
+  --border-focus: #d7ccff;
+  --text-primary: #f4f0ff;
+  --text-secondary: #cfc9e3;
+  --text-muted: #8f88a3;
+  --text-disabled: #625c72;
+  --text-inverse: #08070d;
+  --accent-brand: #bca7ff;
+  --accent-brand-strong: #d7ccff;
+  --accent-brand-soft: rgba(188, 167, 255, 0.13);
+  --accent-brand-border: rgba(188, 167, 255, 0.34);
+  --signal-cyan: #bca7ff;
+  --signal-cyan-strong: #d7ccff;
+  --signal-cyan-soft: rgba(188, 167, 255, 0.1);
+  --signal-cyan-border: rgba(188, 167, 255, 0.28);
+  --signal-blue: #a999dc;
+  --signal-violet: #bca7ff;
+  --signal-violet-soft: rgba(188, 167, 255, 0.13);
+  --state-control: #bca7ff;
+  --state-control-soft: rgba(188, 167, 255, 0.12);
+  --state-control-border: rgba(188, 167, 255, 0.32);
+  --shadow-soft: 0 20px 54px rgba(0, 0, 0, 0.28);
+  --shadow-card: 0 14px 38px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  --shadow-raised: 0 10px 24px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.48);
+  --shadow-glow: 0 0 28px rgba(188, 167, 255, 0.14);
+}
+
+:global(html):has(.shell) :global(body) {
+  background: var(--app-bg);
+  font-family: "Segoe UI Variable Text", "Aptos", system-ui, sans-serif;
+}
+
+:global(html):has(.shell) :global(.nav-surface) {
+  border-color: var(--border-subtle);
+  background: color-mix(in srgb, var(--surface-panel) 96%, transparent);
+  box-shadow: inset -1px 0 0 var(--border-subtle);
+  backdrop-filter: blur(20px);
+}
+
+:global(html):has(.shell) :global(.nav-surface [data-active="true"]) {
+  color: var(--state-color);
+  background: var(--state-soft);
+  box-shadow: inset 0 0 0 1px var(--state-border), var(--shadow-raised);
+}
+
+:global(html):has(.shell) :global(.nav-surface [data-active="true"] > span:first-child) {
+  color: var(--state-color);
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+:global(html):has(.shell) :global(.nav-surface [data-active="true"] svg),
+:global(html):has(.shell) :global(.nav-surface [data-active="true"] > span:last-child) {
+  color: var(--state-color);
+}
+
+.shell {
+  max-width: 44rem;
+  padding: clamp(20px, 4vw, 32px) 20px 112px;
+  color: var(--text-primary);
+  font-family: "Segoe UI Variable Text", "Aptos", system-ui, sans-serif;
+}
+
+.todayHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.todayHeaderMain {
+  min-width: 0;
+}
+
+.titleRow {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.todayHeader h1 {
+  min-width: 0;
+  color: var(--text-primary);
+  font-family: "Segoe UI Variable Display", "Aptos Display", system-ui, sans-serif;
+  font-size: clamp(1.75rem, 4vw, 2.1rem);
+  font-weight: 720;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.todayDate {
+  margin-top: 7px;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 560;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.dayBlownBadge,
+.newDayBadge {
+  display: inline-flex;
+  min-height: 26px;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  padding: 4px 7px;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1;
+}
+
+.dayBlownBadge {
+  border: 1px solid color-mix(in srgb, var(--state-deception) 38%, transparent);
+  color: var(--state-deception);
+  background: var(--state-deception-soft);
+}
+
+.newDayBadge {
+  border: 1px solid var(--state-border);
+  color: var(--state-color);
+  background: var(--state-soft);
+}
+
+.stateControl {
+  flex: 0 0 auto;
+}
+
+.stateControl button {
+  white-space: nowrap;
+  box-shadow: none;
+}
+
+.shell :global(.tactile-card),
+.shell :global([data-slot="card"]),
+.shell :global(.mentor-card),
+.shell :global(.stat-strip) {
+  border-color: var(--border-subtle);
+  border-radius: 14px;
+  background: var(--surface-card);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: none;
+}
+
+.shell :global(.tactile-button-primary) {
+  border: 1px solid var(--state-border);
+  border-radius: 11px;
+  color: var(--text-inverse);
+  background: var(--state-color);
+  box-shadow: var(--shadow-raised);
+}
+
+.shell :global(.tactile-button-primary):hover {
+  filter: brightness(0.96);
+  transform: translateY(-1px);
+}
+
+.shell :global(.mentor-card) {
+  border-left: 2px solid var(--state-color);
+  background: var(--surface-card);
+}
+
+.shell :global(.mentor-icon-tile) {
+  border-color: var(--border-subtle);
+  border-radius: 10px;
+  background: var(--accent-brand-soft);
+  box-shadow: none;
+}
+
+.shell :global(.status-orbit-card)::before {
+  display: none;
+}
+
+.shell :global(.status-meter-summary),
+.shell :global(.status-meter-row),
+.shell :global(.status-capsule),
+.shell :global(.stat-pill) {
+  border-color: var(--border-subtle);
+  background: var(--surface-inset);
+  box-shadow: none;
+}
+
+.shell :global(.status-meter-summary)::before {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.shell :global(.status-meter-signal) {
+  border-radius: 10px;
+}
+
+.shell :global(.status-meter-signal)::after {
+  border-radius: 3px;
+  animation: none;
+}
+
+.shell :global(.status-meter-row[data-tone="core"]) {
+  --meter-tone: var(--accent-brand);
+}
+
+.shell :global(.status-meter-row[data-tone="abyss"]) {
+  --meter-tone: var(--state-deception);
+}
+
+.shell :global(.status-meter-track) {
+  height: 5px;
+  border-radius: 2px;
+}
+
+.shell :global(.status-meter-fill) {
+  border-radius: 2px;
+}
+
+.shell :global(.status-metric-strip .status-capsule) {
+  border-radius: 8px;
+}
+
+.shell :global(.stat-strip) {
+  padding: 16px 0 0;
+  border-top: 1px solid var(--border-subtle);
+  border-right: 0;
+  border-bottom: 0;
+  border-left: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.shell > button:last-of-type {
+  min-height: 44px;
+  border-radius: 10px;
+  background: var(--surface-inset);
+}
+
+.shell :global(.today-task-details) {
+  overflow: hidden;
+  border-color: var(--border-subtle);
+  background: var(--surface-card);
+}
+
+.shell :global(.today-task-details > summary) {
+  display: flex;
+  min-height: 58px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  list-style: none;
+  transition: background-color 140ms ease;
+}
+
+.shell :global(.today-task-details > summary::-webkit-details-marker),
+.secondarySummary::-webkit-details-marker {
+  display: none;
+}
+
+.shell :global(.today-task-details > summary:hover) {
+  background: var(--bg-hover);
+}
+
+.shell :global(.today-task-details > summary:focus-visible),
+.secondarySummary:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: -3px;
+}
+
+.shell :global(.today-task-details > summary)::after {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  border-right: 1.5px solid var(--text-muted);
+  border-bottom: 1.5px solid var(--text-muted);
+  content: "";
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 160ms ease;
+}
+
+.shell :global(.today-task-details[open] > summary)::after {
+  transform: rotate(225deg) translate(-1px, -1px);
+}
+
+.shell :global(.today-task-summary-copy) {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.shell :global(.today-task-summary-copy strong) {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 680;
+  line-height: 1.25;
+}
+
+.shell :global(.today-task-summary-copy small) {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shell :global(.today-task-summary-progress) {
+  margin-left: auto;
+  color: var(--state-color);
+  font-family: ui-monospace, "Cascadia Code", monospace;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.shell :global(.today-task-details-content) {
+  display: grid;
+  gap: 18px;
+  border-top: 1px solid var(--border-subtle);
+  padding: 18px 14px 14px;
+}
+
+.secondaryDetails {
+  overflow: hidden;
+  margin-top: 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  background: var(--surface-card);
+}
+
+.secondarySummary {
+  display: flex;
+  min-height: 58px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  list-style: none;
+  transition: background-color 140ms ease;
+}
+
+.secondarySummary:hover {
+  background: var(--bg-hover);
+}
+
+.secondarySummaryCopy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.secondarySummaryCopy strong {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 680;
+  line-height: 1.25;
+}
+
+.secondarySummaryCopy small {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.secondaryChevron {
+  flex: 0 0 auto;
+  color: var(--text-muted);
+  transition: transform 160ms ease;
+}
+
+.secondaryDetails[open] .secondaryChevron {
+  transform: rotate(180deg);
+}
+
+.secondaryContent {
+  border-top: 1px solid var(--border-subtle);
+  padding: 14px;
+}
+
+.secondaryContent > * + * {
+  margin-top: 16px;
+}
+
+.resetButton {
+  min-height: 44px;
+  width: 100%;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 8px 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+  background: var(--surface-card);
+  transition: color 140ms ease, background-color 140ms ease;
+}
+
+.resetButton:hover {
+  color: var(--text-secondary);
+  background: var(--bg-hover);
+}
+
+.resetButton:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+@media (min-width: 1024px) {
+  .shell {
+    padding-bottom: 40px;
+  }
+}
+
+@media (max-width: 520px) {
+  .shell {
+    padding: 20px 20px 112px;
+  }
+
+  .todayHeader {
+    min-height: 68px;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+  }
+
+  .todayHeader h1 {
+    font-size: 1.8rem;
+  }
+
+  .dayBlownBadge span,
+  .newDayBadge span {
+    display: none;
+  }
+
+  .stateControl button {
+    padding-inline: 11px;
+    font-size: 12px;
+  }
+
+  .shell :global(.today-task-details > summary),
+  .secondarySummary {
+    min-height: 56px;
+    padding-inline: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shell :global(*) {
+    scroll-behavior: auto;
+  }
+}
+
+
+
+
+
+
