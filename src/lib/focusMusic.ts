@@ -10,8 +10,10 @@ export type YandexMusicEmbedIssue = 'empty' | 'invalid';
 const URL_AUDIO_VOLUME = 0.72;
 export const YANDEX_MUSIC_HOME_URL = 'https://music.yandex.ru';
 export const YANDEX_MUSIC_OPEN_URL = YANDEX_MUSIC_HOME_URL;
-export const DEFAULT_YANDEX_MUSIC_EMBED_URL = 'https://music.yandex.ru/iframe/playlist/music-blog/1587';
+export const DEFAULT_YANDEX_MUSIC_EMBED_URL = '';
 export const LEGACY_DEFAULT_YANDEX_MUSIC_EMBED_URLS = [
+  'https://music.yandex.ru/iframe/#track/71263/419460',
+  'https://music.yandex.ru/iframe/playlist/music-blog/1587',
   'https://music.yandex.ru/iframe/#track/55436076/8102024',
   'https://music.yandex.ru/iframe/album/8102024/track/55436076',
 ] as const;

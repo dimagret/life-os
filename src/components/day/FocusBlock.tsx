@@ -8,12 +8,14 @@ import { playTimerEndChime } from '@/lib/sound';
 import { hapticsImpactLight } from '@/lib/capacitor/native';
 import { loadActiveFocusSession, loadUserProfile, saveActiveFocusSession } from '@/lib/storage';
 import {
+  DEFAULT_YANDEX_MUSIC_EMBED_URL,
   fadeOutFocusMusic,
   openYandexMusicPage,
   pauseFocusMusic,
   playFocusMusic,
   stopFocusMusic,
 } from '@/lib/focusMusic';
+import { YandexMusicPlayer } from '@/components/music/YandexMusicPlayer';
 import {
   ArrowLeft,
   CheckCircle2,
@@ -306,10 +308,12 @@ export function FocusBlock({
     Boolean(taskDetail?.trim()) &&
     taskDetail!.trim() !== taskTitle.trim() &&
     taskDetail!.trim() !== taskTitleDisplay;
-  const showYandexExternalPanel =
+  const yandexEmbedUrl = focusMusicProfile?.focusYandexEmbedUrl ?? DEFAULT_YANDEX_MUSIC_EMBED_URL;
+  const showYandexPlayerPanel =
     Boolean(focusMusicProfile?.focusMusicEnabled) &&
     focusMusicProfile?.focusMusicSource === 'yandex' &&
     (phase === 'running' ||
+      phase === 'paused' ||
       (phase === 'completed' && focusMusicProfile.focusMusicEndBehavior === 'continue'));
 
   const idleDisplaySeconds = selectedDuration * 60;
@@ -599,7 +603,7 @@ export function FocusBlock({
     </div>
   );
 
-  const yandexMusicBlock = showYandexExternalPanel ? (
+  const yandexMusicBlock = showYandexPlayerPanel ? (
     <div className="focus-detail-card mt-6 p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
@@ -611,6 +615,13 @@ export function FocusBlock({
           </p>
         </div>
       </div>
+      {yandexEmbedUrl ? (
+        <YandexMusicPlayer url={yandexEmbedUrl} title={t('yandexMusicTitle')} className="mt-3" />
+      ) : (
+        <p className="mt-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] px-3 py-3 text-xs text-[var(--text-muted)]">
+          {t('yandexMusicEmpty')}
+        </p>
+      )}
       <button
         type="button"
         onClick={openYandexMusicPage}

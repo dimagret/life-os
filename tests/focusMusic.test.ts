@@ -37,7 +37,7 @@ describe('Yandex Music iframe helpers', () => {
   });
 
   it('accepts only official Yandex Music iframe URLs for the shell', () => {
-    expect(getYandexMusicEmbedIssue(DEFAULT_YANDEX_MUSIC_EMBED_URL)).toBeNull();
+    expect(getYandexMusicEmbedIssue(DEFAULT_YANDEX_MUSIC_EMBED_URL)).toBe('empty');
     expect(getYandexMusicEmbedIssue('https://music.yandex.ru/iframe/album/8102024/track/55436076')).toBeNull();
     expect(getYandexMusicEmbedIssue('https://music.yandex.ru/iframe/playlist/user-name/123')).toBeNull();
     expect(getYandexMusicEmbedIssue('https://music.yandex.ru/iframe/#track/55436076/8102024')).toBeNull();
@@ -58,7 +58,7 @@ describe('Yandex Music iframe helpers', () => {
   });
 
   it('uses taller iframe shells for playlist and album embeds', () => {
-    expect(getYandexMusicEmbedHeight(DEFAULT_YANDEX_MUSIC_EMBED_URL)).toBe(450);
+    expect(getYandexMusicEmbedHeight('https://music.yandex.ru/iframe/#track/71263/419460')).toBe(180);
     expect(getYandexMusicEmbedHeight('https://music.yandex.ru/iframe/album/8102024/track/55436076')).toBe(244);
     expect(getYandexMusicEmbedHeight('https://music.yandex.ru/iframe/#track/55436076/8102024')).toBe(180);
   });

@@ -27,12 +27,15 @@ import { LocaleToggle } from '@/components/ui/LocaleToggle';
 import { Toast } from '@/components/ui/Toast';
 import { Switch } from '@/components/ui/Switch';
 import {
+  DEFAULT_YANDEX_MUSIC_EMBED_URL,
   getFocusMusicUrlIssue,
+  normalizeYandexMusicEmbedUrl,
   openYandexMusicPage,
   previewFocusMusic,
   stopFocusMusicPreview,
   type FocusMusicUrlIssue,
 } from '@/lib/focusMusic';
+import { YandexMusicPlayer } from '@/components/music/YandexMusicPlayer';
 import styles from './Profile.module.css';
 
 const AI_MODEL_LABEL: Record<string, string> = {
@@ -51,6 +54,7 @@ export default function ProfileClient() {
   const focusMusicSourceId = useId();
   const focusMusicPresetId = useId();
   const focusMusicUrlId = useId();
+  const focusYandexUrlId = useId();
   const focusMusicEndId = useId();
   const taskReminderLabelId = useId();
   const taskReminderIntervalId = useId();
@@ -72,6 +76,7 @@ export default function ProfileClient() {
   const [undoSnapshot, setUndoSnapshot] = useState<StorageSnapshot | null>(null);
   const [focusMusicPreviewing, setFocusMusicPreviewing] = useState(false);
   const [focusMusicError, setFocusMusicError] = useState<string | null>(null);
+  const [focusYandexDraft, setFocusYandexDraft] = useState('');
   const focusMusicPreviewTimeoutRef = useRef<number | null>(null);
 
   const loadData = () => {
@@ -81,6 +86,7 @@ export default function ProfileClient() {
     const knowledge = loadKnowledgeModules();
 
     setProfile(userProfile);
+    setFocusYandexDraft(userProfile.focusYandexEmbedUrl ?? DEFAULT_YANDEX_MUSIC_EMBED_URL);
     setDebtsCount(debts.filter((d) => d.status === 'open').length);
     setCourtCount(reviews.length);
     setKnowledgeCount(knowledge.filter((k) => k.unlocked).length);
@@ -133,6 +139,17 @@ export default function ProfileClient() {
     if (issue === 'pageLink') return t('focusMusicUrlPageUnsupported');
     if (issue === 'invalid') return t('focusMusicUrlInvalid');
     return t('focusMusicUrlEmpty');
+  };
+
+  const handleYandexMusicApply = () => {
+    const normalized = normalizeYandexMusicEmbedUrl(focusYandexDraft);
+    if (!normalized) {
+      setFocusMusicError(t('focusMusicYandexInvalid'));
+      return;
+    }
+    updateProfile({ focusYandexEmbedUrl: normalized, focusYandexPlayerOpen: true });
+    setFocusYandexDraft(normalized);
+    setFocusMusicError(null);
   };
 
   const stopFocusMusicPreviewUi = () => {
@@ -606,35 +623,29 @@ export default function ProfileClient() {
           {focusMusicSource === 'yandex' ? (
             <div className="space-y-3">
               <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-3">
-                <p className="text-xs leading-relaxed text-[var(--text-muted)]">
-                  {t('focusMusicYandexHint')}
-                </p>
+                <p className="text-xs leading-relaxed text-[var(--text-muted)]">{t('focusMusicYandexHint')}</p>
+                <div className="mt-3">
+                  <label htmlFor={focusYandexUrlId} className="mb-1.5 block text-xs uppercase tracking-wider text-[var(--text-muted)]">{t('focusMusicYandexUrl')}</label>
+                  <input
+                    id={focusYandexUrlId}
+                    type="url"
+                    value={focusYandexDraft}
+                    onChange={(event) => { setFocusYandexDraft(event.target.value); setFocusMusicError(null); }}
+                    placeholder={t('focusMusicYandexUrlPlaceholder')}
+                    className="tactile-field w-full p-3 text-sm placeholder:text-[var(--text-disabled)] focus:outline-none focus:border-[var(--accent-brand)]"
+                  />
+                  <p className="mt-1.5 text-[10px] leading-relaxed text-[var(--text-muted)]">{t('focusMusicYandexUrlHint')}</p>
+                </div>
                 <div className="mt-3 grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={openYandexMusicPage}
-                    className="tactile-button col-span-2 inline-flex min-h-11 w-full items-center justify-center px-3 text-center text-xs text-[var(--accent-brand)] hover:bg-[var(--accent-brand-soft)]"
-                  >
-                    {t('focusMusicYandexLogin')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      updateProfile({
-                        focusMusicSource: 'builtin',
-                        focusMusicPreset: profile.focusMusicPreset ?? 'softNoise',
-                      });
-                      setFocusMusicError(null);
-                    }}
-                    className="tactile-button col-span-2 min-h-11 px-3 text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]"
-                  >
-                    {t('focusMusicYandexUseBuiltin')}
-                  </button>
+                  <button type="button" onClick={handleYandexMusicApply} className="tactile-button inline-flex min-h-11 w-full items-center justify-center px-3 text-center text-xs text-[var(--accent-brand)] hover:bg-[var(--accent-brand-soft)]">{t('focusMusicYandexApply')}</button>
+                  <button type="button" onClick={openYandexMusicPage} className="tactile-button inline-flex min-h-11 w-full items-center justify-center px-3 text-center text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]">{t('focusMusicYandexLogin')}</button>
                 </div>
               </div>
-              <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">
-                {t('focusMusicYandexEndStops')}
-              </p>
+              <YandexMusicPlayer url={profile.focusYandexEmbedUrl} title={t('focusMusicYandexPlayerTitle')} />
+              {focusMusicError && (
+                <p className="rounded-lg border border-[var(--state-risk-border)] bg-[var(--state-risk-soft)] px-3 py-2 text-[10px] leading-relaxed text-[var(--state-risk)]">{focusMusicError}</p>
+              )}
+              <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">{t('focusMusicYandexEndStops')}</p>
             </div>
           ) : (
             <div>
