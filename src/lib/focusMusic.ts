@@ -95,7 +95,7 @@ function resolvePreset(profile: UserProfile): FocusMusicPreset {
 }
 
 export function getFocusMusicUrlIssue(rawUrl?: string | null): FocusMusicUrlIssue | null {
-  const value = rawUrl?.trim() ?? '';
+  const value = extractYandexMusicUrl(rawUrl);
   if (!value) return 'empty';
 
   let url: URL;
@@ -117,6 +117,19 @@ export function getFocusMusicUrlIssue(rawUrl?: string | null): FocusMusicUrlIssu
 
 function isYandexMusicHost(hostname: string): boolean {
   return /^music\.yandex\./.test(hostname.toLowerCase());
+}
+
+function extractYandexMusicUrl(rawInput?: string | null): string {
+  const value = rawInput?.trim() ?? '';
+  if (!value) return '';
+
+  const decoded = value
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&amp;/gi, '&');
+  const iframeSrc = decoded.match(/<iframe\b[^>]*\bsrc\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s>]+))/i);
+
+  return (iframeSrc?.[1] ?? iframeSrc?.[2] ?? iframeSrc?.[3] ?? decoded).trim();
 }
 
 function isSafeYandexHash(hash: string): boolean {
@@ -162,7 +175,7 @@ function buildYandexIframeUrlFromHash(hash: string): string | null {
 }
 
 export function getYandexMusicEmbedIssue(rawUrl?: string | null): YandexMusicEmbedIssue | null {
-  const value = rawUrl?.trim() ?? '';
+  const value = extractYandexMusicUrl(rawUrl);
   if (!value) return 'empty';
 
   let url: URL;
@@ -182,7 +195,7 @@ export function getYandexMusicEmbedIssue(rawUrl?: string | null): YandexMusicEmb
 }
 
 export function normalizeYandexMusicEmbedUrl(rawUrl?: string | null): string | null {
-  const value = rawUrl?.trim() ?? '';
+  const value = extractYandexMusicUrl(rawUrl);
   if (!value) return null;
 
   let url: URL;

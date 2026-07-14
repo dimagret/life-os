@@ -144,7 +144,8 @@ export default function ProfileClient() {
   const handleYandexMusicApply = () => {
     const normalized = normalizeYandexMusicEmbedUrl(focusYandexDraft);
     if (!normalized) {
-      setFocusMusicError(t('focusMusicYandexInvalid'));
+      const isHomePage = /^https?:\/\/music\.yandex\.ru\/?(?:[?#].*)?$/i.test(focusYandexDraft.trim());
+      setFocusMusicError(t(isHomePage ? 'focusMusicYandexSpecificLink' : 'focusMusicYandexInvalid'));
       return;
     }
     updateProfile({ focusYandexEmbedUrl: normalized, focusYandexPlayerOpen: true });
@@ -628,7 +629,11 @@ export default function ProfileClient() {
                   <label htmlFor={focusYandexUrlId} className="mb-1.5 block text-xs uppercase tracking-wider text-[var(--text-muted)]">{t('focusMusicYandexUrl')}</label>
                   <input
                     id={focusYandexUrlId}
-                    type="url"
+                    type="text"
+                    inputMode="url"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
                     value={focusYandexDraft}
                     onChange={(event) => { setFocusYandexDraft(event.target.value); setFocusMusicError(null); }}
                     placeholder={t('focusMusicYandexUrlPlaceholder')}

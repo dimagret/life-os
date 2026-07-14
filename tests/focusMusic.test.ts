@@ -57,6 +57,22 @@ describe('Yandex Music iframe helpers', () => {
     );
   });
 
+  it('accepts complete iframe HTML copied from Yandex Music', () => {
+    const html = '<iframe frameborder="0" src="https://music.yandex.ru/iframe/#track/55436076/8102024"></iframe>';
+    const encodedHtml = '<iframe src=&quot;https://music.yandex.ru/iframe/#album/8102024&quot;></iframe>';
+
+    expect(normalizeYandexMusicEmbedUrl(html)).toBe(
+      'https://music.yandex.ru/iframe/#track/55436076/8102024'
+    );
+    expect(normalizeYandexMusicEmbedUrl(encodedHtml)).toBe(
+      'https://music.yandex.ru/iframe/#album/8102024'
+    );
+    expect(getYandexMusicEmbedIssue(html)).toBeNull();
+  });
+
+  it('does not treat the Yandex Music home page as embeddable content', () => {
+    expect(normalizeYandexMusicEmbedUrl('https://music.yandex.ru/')).toBeNull();
+  });
   it('uses taller iframe shells for playlist and album embeds', () => {
     expect(getYandexMusicEmbedHeight('https://music.yandex.ru/iframe/#track/71263/419460')).toBe(180);
     expect(getYandexMusicEmbedHeight('https://music.yandex.ru/iframe/album/8102024/track/55436076')).toBe(244);
