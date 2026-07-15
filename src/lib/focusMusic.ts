@@ -18,13 +18,13 @@ export const LEGACY_DEFAULT_YANDEX_MUSIC_EMBED_URLS = [
   'https://music.yandex.ru/iframe/album/8102024/track/55436076',
 ] as const;
 const YANDEX_MUSIC_IFRAME_ORIGIN = 'https://music.yandex.ru';
-const PRESET_GAIN: Record<FocusMusicPreset, number> = {
-  softNoise: 0.055,
-  deepNoise: 0.07,
-  lowPulse: 0.035,
-  rain: 0.052,
-  airFlow: 0.05,
-  night: 0.032,
+const PRESET_VOLUME: Record<FocusMusicPreset, number> = {
+  softNoise: 0.7,
+  deepNoise: 0.72,
+  lowPulse: 0.64,
+  rain: 0.68,
+  airFlow: 0.72,
+  night: 0.7,
 };
 
 export const FOCUS_MUSIC_CATALOG: readonly FocusMusicPreset[] = [
@@ -35,6 +35,14 @@ export const FOCUS_MUSIC_CATALOG: readonly FocusMusicPreset[] = [
   'lowPulse',
   'night',
 ] as const;
+export const FOCUS_MUSIC_ASSETS: Readonly<Record<FocusMusicPreset, string>> = {
+  softNoise: '/audio/focus/soft-noise.mp3',
+  deepNoise: '/audio/focus/deep-noise.mp3',
+  rain: '/audio/focus/rain.mp3',
+  airFlow: '/audio/focus/air-flow.mp3',
+  lowPulse: '/audio/focus/low-pulse.mp3',
+  night: '/audio/focus/night.mp3',
+};
 const PLAYER_PAGE_HOSTS = [
   /(^|\.)music\.yandex\./,
   /(^|\.)youtube\.com$/,
@@ -45,20 +53,9 @@ const PLAYER_PAGE_HOSTS = [
   /(^|\.)vk\.com$/,
 ];
 
-type SourceNode = AudioBufferSourceNode | OscillatorNode;
-
-interface BuiltInState {
-  ctx: AudioContext;
-  gain: GainNode;
-  preset: FocusMusicPreset;
-  nodes: SourceNode[];
-}
-
 let urlAudio: HTMLAudioElement | null = null;
 let urlAudioSource = '';
-let builtInState: BuiltInState | null = null;
 let fadeIntervalId: number | null = null;
-let fadeStopTimeoutId: number | null = null;
 let previewTimeoutId: number | null = null;
 
 function canUseAudio(): boolean {
@@ -86,15 +83,6 @@ export function openYandexMusicPage(rawUrl?: string | null): boolean {
 
   window.location.assign(pageUrl);
   return false;
-}
-
-function getAudioContextClass(): typeof AudioContext | null {
-  if (!canUseAudio()) return null;
-  const win = window as unknown as {
-    AudioContext?: typeof AudioContext;
-    webkitAudioContext?: typeof AudioContext;
-  };
-  return win.AudioContext ?? win.webkitAudioContext ?? null;
 }
 
 function resolveSource(profile: UserProfile): FocusMusicSource {
@@ -324,10 +312,6 @@ function clearFadeTimers(): void {
     window.clearInterval(fadeIntervalId);
     fadeIntervalId = null;
   }
-  if (fadeStopTimeoutId !== null) {
-    window.clearTimeout(fadeStopTimeoutId);
-    fadeStopTimeoutId = null;
-  }
 }
 
 function clearPreviewTimer(): void {
@@ -336,98 +320,6 @@ function clearPreviewTimer(): void {
     window.clearTimeout(previewTimeoutId);
     previewTimeoutId = null;
   }
-}
-
-function createNoiseBuffer(ctx: AudioContext, preset: FocusMusicPreset): AudioBuffer {
-  const length = Math.max(1, Math.floor(ctx.sampleRate * 2));
-  const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
-  const data = buffer.getChannelData(0);
-  let last = 0;
-
-  for (let i = 0; i < length; i += 1) {
-    const white = Math.random() * 2 - 1;
-    if (preset === 'deepNoise') {
-      last = (last + 0.02 * white) / 1.02;
-      data[i] = Math.max(-1, Math.min(1, last * 3.5));
-    } else if (preset === 'rain') {
-      last = 0.46 * last + 0.54 * white;
-      const drop = Math.random() > 0.998 ? (Math.random() * 2 - 1) * 0.75 : 0;
-      data[i] = Math.max(-1, Math.min(1, last * 0.34 + drop));
-    } else if (preset === 'airFlow') {
-      last = 0.975 * last + 0.025 * white;
-      data[i] = Math.max(-1, Math.min(1, last * 1.75));
-    } else if (preset === 'night') {
-      last = 0.988 * last + 0.012 * white;
-      data[i] = Math.max(-1, Math.min(1, last * 1.35));
-    } else {
-      last = 0.92 * last + 0.08 * white;
-      data[i] = Math.max(-1, Math.min(1, last * 1.2));
-    }
-  }
-
-  return buffer;
-}
-
-function createBuiltInState(preset: FocusMusicPreset): BuiltInState | null {
-  const AudioContextClass = getAudioContextClass();
-  if (!AudioContextClass) return null;
-
-  const ctx = new AudioContextClass();
-  const gain = ctx.createGain();
-  const nodes: SourceNode[] = [];
-  gain.gain.value = 0;
-  gain.connect(ctx.destination);
-
-  if (preset === 'lowPulse') {
-    const carrier = ctx.createOscillator();
-    const carrierGain = ctx.createGain();
-    carrier.type = 'sine';
-    carrier.frequency.value = 82;
-    carrierGain.gain.value = 0.65;
-    carrier.connect(carrierGain).connect(gain);
-    carrier.start();
-    nodes.push(carrier);
-
-    const overtone = ctx.createOscillator();
-    const overtoneGain = ctx.createGain();
-    overtone.type = 'sine';
-    overtone.frequency.value = 164;
-    overtoneGain.gain.value = 0.12;
-    overtone.connect(overtoneGain).connect(gain);
-    overtone.start();
-    nodes.push(overtone);
-  } else {
-    const source = ctx.createBufferSource();
-    const filter = ctx.createBiquadFilter();
-    source.buffer = createNoiseBuffer(ctx, preset);
-    source.loop = true;
-    filter.type = preset === 'rain' ? 'bandpass' : 'lowpass';
-    filter.frequency.value =
-      preset === 'deepNoise'
-        ? 420
-        : preset === 'rain'
-          ? 2400
-          : preset === 'airFlow'
-            ? 720
-            : preset === 'night'
-              ? 260
-              : 980;
-    filter.Q.value = preset === 'rain' ? 0.72 : 0.45;
-    source.connect(filter).connect(gain);
-    source.start();
-    nodes.push(source);
-  }
-
-  return { ctx, gain, preset, nodes };
-}
-
-function rampBuiltInGain(target: number, seconds: number): void {
-  const current = builtInState;
-  if (!current) return;
-  const now = current.ctx.currentTime;
-  current.gain.gain.cancelScheduledValues(now);
-  current.gain.gain.setValueAtTime(current.gain.gain.value, now);
-  current.gain.gain.linearRampToValueAtTime(target, now + seconds);
 }
 
 function stopUrlAudio(): void {
@@ -443,19 +335,22 @@ function stopUrlAudio(): void {
   urlAudioSource = '';
 }
 
-function stopBuiltIn(): void {
-  const current = builtInState;
-  if (!current) return;
-  builtInState = null;
-  current.nodes.forEach((node) => {
-    try {
-      node.stop();
-    } catch {
-      // Oscillators and buffer sources can only be stopped once.
-    }
-  });
-  current.gain.disconnect();
-  void current.ctx.close().catch(() => undefined);
+async function playAudioSource(nextSource: string, volume: number): Promise<boolean> {
+  if (!urlAudio || urlAudioSource !== nextSource) {
+    stopUrlAudio();
+    urlAudio = new Audio(nextSource);
+    urlAudio.loop = true;
+    urlAudio.preload = 'auto';
+    urlAudioSource = nextSource;
+  }
+
+  urlAudio.volume = volume;
+  try {
+    await urlAudio.play();
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export async function playFocusMusic(profile: UserProfile): Promise<boolean> {
@@ -473,51 +368,19 @@ export async function playFocusMusic(profile: UserProfile): Promise<boolean> {
   }
 
   if (source === 'url') {
-    stopBuiltIn();
     const nextUrl = profile.focusMusicUrl?.trim();
     if (!nextUrl) return false;
     if (getFocusMusicUrlIssue(nextUrl)) return false;
-
-    if (!urlAudio || urlAudioSource !== nextUrl) {
-      stopUrlAudio();
-      urlAudio = new Audio(nextUrl);
-      urlAudio.loop = true;
-      urlAudio.preload = 'auto';
-      urlAudio.volume = URL_AUDIO_VOLUME;
-      urlAudioSource = nextUrl;
-    }
-
-    try {
-      urlAudio.volume = URL_AUDIO_VOLUME;
-      await urlAudio.play();
-      return true;
-    } catch {
-      return false;
-    }
+    return playAudioSource(nextUrl, URL_AUDIO_VOLUME);
   }
 
-  stopUrlAudio();
   const preset = resolvePreset(profile);
-  if (!builtInState || builtInState.preset !== preset || builtInState.ctx.state === 'closed') {
-    stopBuiltIn();
-    builtInState = createBuiltInState(preset);
-  }
-
-  if (!builtInState) return false;
-
-  try {
-    await builtInState.ctx.resume();
-    rampBuiltInGain(PRESET_GAIN[preset], 0.18);
-    return true;
-  } catch {
-    return false;
-  }
+  return playAudioSource(FOCUS_MUSIC_ASSETS[preset], PRESET_VOLUME[preset]);
 }
 
 export function pauseFocusMusic(): void {
   clearFadeTimers();
   if (urlAudio) urlAudio.pause();
-  if (builtInState) rampBuiltInGain(0, 0.12);
 }
 
 export function fadeOutFocusMusic(): void {
@@ -538,21 +401,12 @@ export function fadeOutFocusMusic(): void {
       }
     }, 100);
   }
-
-  if (builtInState) {
-    rampBuiltInGain(0, 1.8);
-    fadeStopTimeoutId = window.setTimeout(() => {
-      fadeStopTimeoutId = null;
-      stopBuiltIn();
-    }, 2100);
-  }
 }
 
 export function stopFocusMusic(): void {
   clearFadeTimers();
   clearPreviewTimer();
   stopUrlAudio();
-  stopBuiltIn();
 }
 
 export async function previewFocusMusic(profile: UserProfile, durationMs = 8000): Promise<boolean> {

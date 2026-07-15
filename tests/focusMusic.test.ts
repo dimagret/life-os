@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   DEFAULT_YANDEX_MUSIC_EMBED_URL,
+  FOCUS_MUSIC_ASSETS,
   FOCUS_MUSIC_CATALOG,
   getFocusMusicUrlIssue,
   getYandexMusicEmbedHeight,
@@ -25,6 +26,43 @@ describe('Life OS focus music catalog', () => {
       'night',
     ]);
     expect(new Set(FOCUS_MUSIC_CATALOG).size).toBe(FOCUS_MUSIC_CATALOG.length);
+  });
+
+  it('maps every preset to a unique local audio asset', () => {
+    const assets = FOCUS_MUSIC_CATALOG.map((preset) => FOCUS_MUSIC_ASSETS[preset]);
+
+    expect(assets.every((asset) => asset.startsWith('/audio/focus/') && asset.endsWith('.mp3'))).toBe(true);
+    expect(new Set(assets).size).toBe(FOCUS_MUSIC_CATALOG.length);
+  });
+
+  it('plays the selected local asset instead of generating procedural noise', async () => {
+    const play = vi.fn().mockResolvedValue(undefined);
+    const AudioMock = vi.fn(() => ({
+      currentTime: 0,
+      loop: false,
+      pause: vi.fn(),
+      paused: true,
+      play,
+      preload: '',
+      volume: 1,
+    }));
+    vi.stubGlobal('window', {
+      clearInterval: vi.fn(),
+      clearTimeout: vi.fn(),
+    });
+    vi.stubGlobal('Audio', AudioMock);
+
+    const started = await playFocusMusic({
+      focusMusicEnabled: true,
+      focusMusicSource: 'builtin',
+      focusMusicPreset: 'rain',
+    } as UserProfile);
+
+    expect(started).toBe(true);
+    expect(AudioMock).toHaveBeenCalledWith('/audio/focus/rain.mp3');
+    expect(play).toHaveBeenCalledOnce();
+
+    vi.unstubAllGlobals();
   });
 });
 describe('getFocusMusicUrlIssue', () => {
