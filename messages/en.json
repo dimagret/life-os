@@ -261,6 +261,17 @@
     "start": "Start focus",
     "distractionsCount": "Distractions: {count}",
     "distracted": "I got distracted",
+    "musicTitle": "Focus background",
+    "musicHint": "Sound follows the timer",
+    "musicSelect": "Soundscape",
+    "musicTracks": {
+      "softNoise": "Quiet flow",
+      "deepNoise": "Deep focus",
+      "rain": "Window rain",
+      "airFlow": "Air flow",
+      "lowPulse": "Low pulse",
+      "night": "Night quiet"
+    },
     "yandexMusicTitle": "Yandex Music",
     "yandexMusicHint": "The player is embedded in the focus session. Control playback right here.",
     "yandexMusicRefresh": "Refresh",
@@ -404,7 +415,38 @@
     "soundToggle": "Sound when timer ends",
     "soundHint": "A short chime and a light haptic tap when the focus timer reaches zero.",
     "focusMusicToggle": "Music during focus",
-    "focusMusicHint": "The default built-in background starts with the timer. Use an external link only for a direct audio file or stream.",
+    "focusMusicHint": "Choose a Life OS soundscape. It starts, pauses, and ends together with the focus timer.",
+    "focusCatalogTitle": "Focus catalog",
+    "focusCatalogHint": "Choose a card to select the soundscape and hear it immediately.",
+    "focusCatalogPlaying": "Now playing",
+    "focusCatalogSelected": "Selected",
+    "focusCatalogPreview": "Preview",
+    "focusCatalog": {
+      "softNoise": {
+        "title": "Quiet flow",
+        "description": "Even soft noise with no sharp frequencies"
+      },
+      "deepNoise": {
+        "title": "Deep focus",
+        "description": "Dense low background for demanding work"
+      },
+      "rain": {
+        "title": "Window rain",
+        "description": "A diffused rain layer with no melody"
+      },
+      "airFlow": {
+        "title": "Air flow",
+        "description": "A light stable stream for reading"
+      },
+      "lowPulse": {
+        "title": "Low pulse",
+        "description": "A calm tone with soft overtones"
+      },
+      "night": {
+        "title": "Night quiet",
+        "description": "A very quiet dark background for evenings"
+      }
+    },
     "focusMusicSource": "Source",
     "focusMusicBuiltin": "Built-in background",
     "focusMusicYandexSource": "Yandex Music",

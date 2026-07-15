@@ -22,7 +22,19 @@ const PRESET_GAIN: Record<FocusMusicPreset, number> = {
   softNoise: 0.055,
   deepNoise: 0.07,
   lowPulse: 0.035,
+  rain: 0.052,
+  airFlow: 0.05,
+  night: 0.032,
 };
+
+export const FOCUS_MUSIC_CATALOG: readonly FocusMusicPreset[] = [
+  'softNoise',
+  'deepNoise',
+  'rain',
+  'airFlow',
+  'lowPulse',
+  'night',
+] as const;
 const PLAYER_PAGE_HOSTS = [
   /(^|\.)music\.yandex\./,
   /(^|\.)youtube\.com$/,
@@ -93,7 +105,7 @@ function resolveSource(profile: UserProfile): FocusMusicSource {
 
 function resolvePreset(profile: UserProfile): FocusMusicPreset {
   const preset = profile.focusMusicPreset;
-  return preset === 'deepNoise' || preset === 'lowPulse' ? preset : 'softNoise';
+  return FOCUS_MUSIC_CATALOG.includes(preset as FocusMusicPreset) ? (preset as FocusMusicPreset) : 'softNoise';
 }
 
 export function getFocusMusicUrlIssue(rawUrl?: string | null): FocusMusicUrlIssue | null {
@@ -337,6 +349,16 @@ function createNoiseBuffer(ctx: AudioContext, preset: FocusMusicPreset): AudioBu
     if (preset === 'deepNoise') {
       last = (last + 0.02 * white) / 1.02;
       data[i] = Math.max(-1, Math.min(1, last * 3.5));
+    } else if (preset === 'rain') {
+      last = 0.46 * last + 0.54 * white;
+      const drop = Math.random() > 0.998 ? (Math.random() * 2 - 1) * 0.75 : 0;
+      data[i] = Math.max(-1, Math.min(1, last * 0.34 + drop));
+    } else if (preset === 'airFlow') {
+      last = 0.975 * last + 0.025 * white;
+      data[i] = Math.max(-1, Math.min(1, last * 1.75));
+    } else if (preset === 'night') {
+      last = 0.988 * last + 0.012 * white;
+      data[i] = Math.max(-1, Math.min(1, last * 1.35));
     } else {
       last = 0.92 * last + 0.08 * white;
       data[i] = Math.max(-1, Math.min(1, last * 1.2));
@@ -379,9 +401,18 @@ function createBuiltInState(preset: FocusMusicPreset): BuiltInState | null {
     const filter = ctx.createBiquadFilter();
     source.buffer = createNoiseBuffer(ctx, preset);
     source.loop = true;
-    filter.type = 'lowpass';
-    filter.frequency.value = preset === 'deepNoise' ? 420 : 980;
-    filter.Q.value = 0.45;
+    filter.type = preset === 'rain' ? 'bandpass' : 'lowpass';
+    filter.frequency.value =
+      preset === 'deepNoise'
+        ? 420
+        : preset === 'rain'
+          ? 2400
+          : preset === 'airFlow'
+            ? 720
+            : preset === 'night'
+              ? 260
+              : 980;
+    filter.Q.value = preset === 'rain' ? 0.72 : 0.45;
     source.connect(filter).connect(gain);
     source.start();
     nodes.push(source);

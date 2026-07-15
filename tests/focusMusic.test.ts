@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   DEFAULT_YANDEX_MUSIC_EMBED_URL,
+  FOCUS_MUSIC_CATALOG,
   getFocusMusicUrlIssue,
   getYandexMusicEmbedHeight,
   getYandexMusicEmbedIssue,
@@ -12,6 +13,20 @@ import {
 } from '@/lib/focusMusic';
 import type { UserProfile } from '@/types';
 
+
+describe('Life OS focus music catalog', () => {
+  it('exposes six unique built-in soundscapes', () => {
+    expect(FOCUS_MUSIC_CATALOG).toEqual([
+      'softNoise',
+      'deepNoise',
+      'rain',
+      'airFlow',
+      'lowPulse',
+      'night',
+    ]);
+    expect(new Set(FOCUS_MUSIC_CATALOG).size).toBe(FOCUS_MUSIC_CATALOG.length);
+  });
+});
 describe('getFocusMusicUrlIssue', () => {
   it('allows direct audio-like URLs', () => {
     expect(getFocusMusicUrlIssue('https://cdn.example.com/focus.mp3')).toBeNull();

@@ -27,15 +27,12 @@ import { LocaleToggle } from '@/components/ui/LocaleToggle';
 import { Toast } from '@/components/ui/Toast';
 import { Switch } from '@/components/ui/Switch';
 import {
-  DEFAULT_YANDEX_MUSIC_EMBED_URL,
-  getFocusMusicUrlIssue,
-  normalizeYandexMusicEmbedUrl,
-  openYandexMusicPage,
+  FOCUS_MUSIC_CATALOG,
   previewFocusMusic,
   stopFocusMusicPreview,
-  type FocusMusicUrlIssue,
+  type FocusMusicPreset,
 } from '@/lib/focusMusic';
-import { YandexMusicPlayer } from '@/components/music/YandexMusicPlayer';
+import { AudioLines, CloudRain, Moon, Radio, Waves, Wind } from 'lucide-react';
 import styles from './Profile.module.css';
 
 const AI_MODEL_LABEL: Record<string, string> = {
@@ -45,16 +42,21 @@ const AI_MODEL_LABEL: Record<string, string> = {
   'openai/gpt-4o-mini': 'GPT-4o Mini',
 };
 
+const FOCUS_SOUND_ICONS: Record<FocusMusicPreset, typeof Waves> = {
+  softNoise: Waves,
+  deepNoise: Radio,
+  rain: CloudRain,
+  airFlow: Wind,
+  lowPulse: AudioLines,
+  night: Moon,
+};
+
 export default function ProfileClient() {
   const t = useTranslations('profile');
   const locale = useLocale();
   const mentorOfflineLabelId = useId();
   const soundLabelId = useId();
   const focusMusicLabelId = useId();
-  const focusMusicSourceId = useId();
-  const focusMusicPresetId = useId();
-  const focusMusicUrlId = useId();
-  const focusYandexUrlId = useId();
   const focusMusicEndId = useId();
   const taskReminderLabelId = useId();
   const taskReminderIntervalId = useId();
@@ -76,7 +78,7 @@ export default function ProfileClient() {
   const [undoSnapshot, setUndoSnapshot] = useState<StorageSnapshot | null>(null);
   const [focusMusicPreviewing, setFocusMusicPreviewing] = useState(false);
   const [focusMusicError, setFocusMusicError] = useState<string | null>(null);
-  const [focusYandexDraft, setFocusYandexDraft] = useState('');
+
   const focusMusicPreviewTimeoutRef = useRef<number | null>(null);
 
   const loadData = () => {
@@ -86,7 +88,7 @@ export default function ProfileClient() {
     const knowledge = loadKnowledgeModules();
 
     setProfile(userProfile);
-    setFocusYandexDraft(userProfile.focusYandexEmbedUrl ?? DEFAULT_YANDEX_MUSIC_EMBED_URL);
+
     setDebtsCount(debts.filter((d) => d.status === 'open').length);
     setCourtCount(reviews.length);
     setKnowledgeCount(knowledge.filter((k) => k.unlocked).length);
@@ -128,36 +130,9 @@ export default function ProfileClient() {
     setProfile(updated);
   };
 
-  const focusMusicSource = profile.focusMusicSource ?? 'builtin';
-  const focusMusicPreset = profile.focusMusicPreset ?? 'softNoise';
-  const focusMusicUrlIssue =
-    focusMusicSource === 'url' ? getFocusMusicUrlIssue(profile.focusMusicUrl) : null;
-  const canPreviewFocusMusic =
-    focusMusicSource === 'builtin' || (focusMusicSource === 'url' && focusMusicUrlIssue === null);
-
-  const getFocusMusicIssueMessage = (issue: FocusMusicUrlIssue) => {
-    if (issue === 'pageLink') return t('focusMusicUrlPageUnsupported');
-    if (issue === 'invalid') return t('focusMusicUrlInvalid');
-    return t('focusMusicUrlEmpty');
-  };
-
-  const handleYandexMusicApply = () => {
-    const normalized = normalizeYandexMusicEmbedUrl(focusYandexDraft);
-    if (!normalized) {
-      const isHomePage = /^https?:\/\/music\.yandex\.ru\/?(?:[?#].*)?$/i.test(focusYandexDraft.trim());
-      setFocusMusicError(t(isHomePage ? 'focusMusicYandexSpecificLink' : 'focusMusicYandexInvalid'));
-      return;
-    }
-    updateProfile({
-      focusMusicEnabled: true,
-      focusMusicSource: 'yandex',
-      focusYandexEmbedUrl: normalized,
-      focusYandexPlayerOpen: true,
-    });
-    setFocusYandexDraft(normalized);
-    setFocusMusicError(null);
-  };
-
+  const focusMusicPreset = FOCUS_MUSIC_CATALOG.includes(profile.focusMusicPreset as FocusMusicPreset)
+    ? (profile.focusMusicPreset as FocusMusicPreset)
+    : 'softNoise';
   const stopFocusMusicPreviewUi = () => {
     if (focusMusicPreviewTimeoutRef.current !== null) {
       window.clearTimeout(focusMusicPreviewTimeoutRef.current);
@@ -167,36 +142,31 @@ export default function ProfileClient() {
     setFocusMusicPreviewing(false);
   };
 
-  const handleFocusMusicPreview = async () => {
-    if (focusMusicPreviewing) {
-      stopFocusMusicPreviewUi();
-      return;
-    }
-    if (focusMusicSource === 'url' && focusMusicUrlIssue) {
-      setFocusMusicError(getFocusMusicIssueMessage(focusMusicUrlIssue));
-      return;
-    }
-    if (!canPreviewFocusMusic) return;
-
-    setFocusMusicError(null);
-    setFocusMusicPreviewing(true);
-    const started = await previewFocusMusic({
+  const startFocusPreview = async (preset: FocusMusicPreset) => {
+    stopFocusMusicPreviewUi();
+    const nextProfile: UserProfile = {
       ...profile,
       focusMusicEnabled: true,
-      focusMusicSource,
-      focusMusicPreset,
-    });
+      focusMusicSource: 'builtin',
+      focusMusicPreset: preset,
+    };
+    saveUserProfile(nextProfile);
+    setProfile(nextProfile);
+    setFocusMusicError(null);
+    setFocusMusicPreviewing(true);
+
+    const started = await previewFocusMusic(nextProfile);
     if (!started) {
       setFocusMusicPreviewing(false);
       setFocusMusicError(t('focusMusicPreviewFailed'));
       return;
     }
+
     focusMusicPreviewTimeoutRef.current = window.setTimeout(() => {
       focusMusicPreviewTimeoutRef.current = null;
       setFocusMusicPreviewing(false);
     }, 8000);
   };
-
   const handleFillDemo = () => {
     createDemoData();
     bootstrapApp();
@@ -509,193 +479,93 @@ export default function ProfileClient() {
           />
         </div>
 
-        <div className="tactile-card mt-3 space-y-3 p-4">
+        <div className="tactile-card mt-3 space-y-4 p-4">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1" id={focusMusicLabelId}>
-              <p className="text-sm font-medium text-[var(--text-primary)] leading-snug">
+              <p className="text-sm font-medium leading-snug text-[var(--text-primary)]">
                 {t('focusMusicToggle')}
               </p>
-              <p className="text-xs text-[var(--text-muted)] mt-1.5 leading-relaxed">
+              <p className="mt-1.5 text-xs leading-relaxed text-[var(--text-muted)]">
                 {t('focusMusicHint')}
               </p>
             </div>
             <Switch
               checked={profile.focusMusicEnabled ?? false}
-              onCheckedChange={(v) => updateProfile({ focusMusicEnabled: v })}
+              onCheckedChange={(enabled) => {
+                updateProfile({
+                  focusMusicEnabled: enabled,
+                  focusMusicSource: 'builtin',
+                  focusMusicPreset,
+                });
+                if (!enabled) stopFocusMusicPreviewUi();
+              }}
               aria-labelledby={focusMusicLabelId}
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label
-                htmlFor={focusMusicSourceId}
-                className="text-xs uppercase tracking-wider text-[var(--text-muted)] block mb-1.5"
-              >
-                {t('focusMusicSource')}
-              </label>
-              <select
-                id={focusMusicSourceId}
-                value={focusMusicSource}
-                onChange={(e) => {
-                  const nextSource =
-                    e.target.value === 'url'
-                      ? 'url'
-                      : e.target.value === 'yandex'
-                        ? 'yandex'
-                        : 'builtin';
-                  const nextPatch: Partial<UserProfile> = {
-                    focusMusicSource: nextSource,
-                  };
-                  if (nextSource === 'yandex') {
-                    nextPatch.focusYandexPlayerOpen = true;
-                  }
-                  updateProfile({
-                    ...nextPatch,
-                  });
-                  setFocusMusicError(null);
-                  stopFocusMusicPreviewUi();
-                }}
-                className="tactile-field w-full p-3 text-sm focus:outline-none focus:border-[var(--accent-brand)]"
-              >
-                <option value="builtin">{t('focusMusicBuiltin')}</option>
-                <option value="yandex">{t('focusMusicYandexSource')}</option>
-                <option value="url">{t('focusMusicUrlSource')}</option>
-              </select>
+          <div>
+            <div className="flex items-end justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                  {t('focusCatalogTitle')}
+                </p>
+                <p className="mt-1 text-[11px] leading-relaxed text-[var(--text-muted)]">
+                  {t('focusCatalogHint')}
+                </p>
+              </div>
+              <span className={styles.catalogCount}>{FOCUS_MUSIC_CATALOG.length}</span>
             </div>
 
-            {focusMusicSource === 'builtin' && (
-              <div>
-                <label
-                  htmlFor={focusMusicPresetId}
-                  className="text-xs uppercase tracking-wider text-[var(--text-muted)] block mb-1.5"
-                >
-                  {t('focusMusicPreset')}
-                </label>
-                <select
-                  id={focusMusicPresetId}
-                  value={focusMusicPreset}
-                  onChange={(e) => {
-                    const nextPreset =
-                      e.target.value === 'deepNoise'
-                        ? 'deepNoise'
-                        : e.target.value === 'lowPulse'
-                          ? 'lowPulse'
-                          : 'softNoise';
-                    updateProfile({ focusMusicPreset: nextPreset });
-                    setFocusMusicError(null);
-                    stopFocusMusicPreviewUi();
-                  }}
-                  className="tactile-field w-full p-3 text-sm focus:outline-none focus:border-[var(--accent-brand)]"
-                >
-                  <option value="softNoise">{t('focusMusicPresetSoftNoise')}</option>
-                  <option value="deepNoise">{t('focusMusicPresetDeepNoise')}</option>
-                  <option value="lowPulse">{t('focusMusicPresetLowPulse')}</option>
-                </select>
-              </div>
-            )}
+            <div className={styles.focusCatalog} role="group" aria-label={t('focusCatalogTitle')}>
+              {FOCUS_MUSIC_CATALOG.map((preset) => {
+                const Icon = FOCUS_SOUND_ICONS[preset];
+                const selected = focusMusicPreset === preset;
+                return (
+                  <button
+                    key={preset}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => void startFocusPreview(preset)}
+                    className={styles.focusTrack}
+                  >
+                    <span className={styles.trackIcon} aria-hidden="true">
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <span className={styles.trackCopy}>
+                      <span className={styles.trackTitle}>{t('focusCatalog.' + preset + '.title')}</span>
+                      <span className={styles.trackDescription}>{t('focusCatalog.' + preset + '.description')}</span>
+                    </span>
+                    <span className={styles.trackAction} aria-hidden="true">
+                      {selected && focusMusicPreviewing ? t('focusCatalogPlaying') : selected ? t('focusCatalogSelected') : t('focusCatalogPreview')}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {focusMusicSource === 'url' && (
-            <div>
-              <label
-                htmlFor={focusMusicUrlId}
-                className="text-xs uppercase tracking-wider text-[var(--text-muted)] block mb-1.5"
-              >
-                {t('focusMusicUrl')}
-              </label>
-              <input
-                id={focusMusicUrlId}
-                type="url"
-                value={profile.focusMusicUrl ?? ''}
-                onChange={(e) => {
-                  updateProfile({ focusMusicUrl: e.target.value });
-                  setFocusMusicError(null);
-                }}
-                placeholder={t('focusMusicUrlPlaceholder')}
-                className="tactile-field w-full p-3 text-sm placeholder:text-[var(--text-disabled)] focus:outline-none focus:border-[var(--accent-brand)]"
-              />
-              <p className="text-[10px] text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                {t('focusMusicUrlHint')}
-              </p>
-              {focusMusicUrlIssue && focusMusicUrlIssue !== 'empty' && (
-                <p className="mt-2 rounded-lg border border-[var(--state-risk-border)] bg-[var(--state-risk-soft)] px-3 py-2 text-[10px] leading-relaxed text-[var(--state-risk)]">
-                  {getFocusMusicIssueMessage(focusMusicUrlIssue)}
-                </p>
-              )}
-            </div>
+          {focusMusicPreviewing && (
+            <button type="button" onClick={stopFocusMusicPreviewUi} className="tactile-button min-h-11 w-full text-sm">
+              {t('focusMusicStopPreview')}
+            </button>
           )}
 
-          {focusMusicSource === 'yandex' ? (
-            <div className="space-y-3">
-              <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-3">
-                <p className="text-xs leading-relaxed text-[var(--text-muted)]">{t('focusMusicYandexHint')}</p>
-                <div className="mt-3">
-                  <label htmlFor={focusYandexUrlId} className="mb-1.5 block text-xs uppercase tracking-wider text-[var(--text-muted)]">{t('focusMusicYandexUrl')}</label>
-                  <input
-                    id={focusYandexUrlId}
-                    type="text"
-                    inputMode="url"
-                    autoCapitalize="none"
-                    autoCorrect="off"
-                    spellCheck={false}
-                    value={focusYandexDraft}
-                    onChange={(event) => { setFocusYandexDraft(event.target.value); setFocusMusicError(null); }}
-                    placeholder={t('focusMusicYandexUrlPlaceholder')}
-                    className="tactile-field w-full p-3 text-sm placeholder:text-[var(--text-disabled)] focus:outline-none focus:border-[var(--accent-brand)]"
-                  />
-                  <p className="mt-1.5 text-[10px] leading-relaxed text-[var(--text-muted)]">{t('focusMusicYandexUrlHint')}</p>
-                </div>
-                <div className="mt-3 grid grid-cols-2 gap-2">
-                  <button type="button" onClick={handleYandexMusicApply} className="tactile-button inline-flex min-h-11 w-full items-center justify-center px-3 text-center text-xs text-[var(--accent-brand)] hover:bg-[var(--accent-brand-soft)]">{t('focusMusicYandexApply')}</button>
-                  <button type="button" onClick={() => openYandexMusicPage(focusYandexDraft || profile.focusYandexEmbedUrl)} className="tactile-button inline-flex min-h-11 w-full items-center justify-center px-3 text-center text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]">{t('focusMusicYandexLogin')}</button>
-                </div>
-              </div>
-              <YandexMusicPlayer url={profile.focusYandexEmbedUrl} title={t('focusMusicYandexPlayerTitle')} />
-              {focusMusicError && (
-                <p className="rounded-lg border border-[var(--state-risk-border)] bg-[var(--state-risk-soft)] px-3 py-2 text-[10px] leading-relaxed text-[var(--state-risk)]">{focusMusicError}</p>
-              )}
-              <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">{t('focusMusicYandexFallback')}</p>
-              <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">{t('focusMusicYandexEndStops')}</p>
-            </div>
-          ) : (
-            <div>
-              <button
-                type="button"
-                onClick={handleFocusMusicPreview}
-                disabled={!canPreviewFocusMusic}
-                className={`tactile-button w-full border py-3 text-sm transition-all ${
-                  canPreviewFocusMusic
-                    ? 'border-[var(--accent-brand)] text-[var(--accent-brand)] hover:bg-[var(--accent-brand-soft)]'
-                    : 'border-[var(--border-subtle)] text-[var(--text-disabled)] cursor-not-allowed'
-                }`}
-              >
-                {focusMusicPreviewing ? t('focusMusicStopPreview') : t('focusMusicPreview')}
-              </button>
-              <p className="text-[10px] text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                {t('focusMusicPreviewHint')}
-              </p>
-              {focusMusicError && (
-                <p className="mt-2 rounded-lg border border-[var(--state-risk-border)] bg-[var(--state-risk-soft)] px-3 py-2 text-[10px] leading-relaxed text-[var(--state-risk)]">
-                  {focusMusicError}
-                </p>
-              )}
-            </div>
+          {focusMusicError && (
+            <p className="rounded-lg border border-[var(--state-risk-border)] bg-[var(--state-risk-soft)] px-3 py-2 text-[10px] leading-relaxed text-[var(--state-risk)]">
+              {focusMusicError}
+            </p>
           )}
 
           <div>
-            <label
-              htmlFor={focusMusicEndId}
-              className="text-xs uppercase tracking-wider text-[var(--text-muted)] block mb-1.5"
-            >
+            <label htmlFor={focusMusicEndId} className="mb-1.5 block text-xs uppercase tracking-wider text-[var(--text-muted)]">
               {t('focusMusicEnd')}
             </label>
             <select
               id={focusMusicEndId}
               value={profile.focusMusicEndBehavior ?? 'fade'}
-              onChange={(e) =>
+              onChange={(event) =>
                 updateProfile({
-                  focusMusicEndBehavior: e.target.value === 'continue' ? 'continue' : 'fade',
+                  focusMusicEndBehavior: event.target.value === 'continue' ? 'continue' : 'fade',
                 })
               }
               className="tactile-field w-full p-3 text-sm focus:outline-none focus:border-[var(--accent-brand)]"
@@ -705,7 +575,6 @@ export default function ProfileClient() {
             </select>
           </div>
         </div>
-
       </section>
 
       <section aria-labelledby="reminders-heading" className="mt-10 border-t border-[var(--border-subtle)] pt-6">

@@ -134,6 +134,11 @@ function migrateFocusMusicProfile(p: UserProfile): UserProfile {
     patch.focusYandexPlayerOpen = true;
   }
 
+  // Life OS now uses its own controllable soundscape catalog. External providers
+  // remain readable for backward compatibility, but active playback is migrated.
+  if (p.focusMusicSource !== 'builtin') {
+    patch.focusMusicSource = 'builtin';
+  }
   if (Object.keys(patch).length === 0) return p;
 
   const next = { ...p, ...patch };
