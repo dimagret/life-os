@@ -148,7 +148,12 @@ export default function ProfileClient() {
       setFocusMusicError(t(isHomePage ? 'focusMusicYandexSpecificLink' : 'focusMusicYandexInvalid'));
       return;
     }
-    updateProfile({ focusYandexEmbedUrl: normalized, focusYandexPlayerOpen: true });
+    updateProfile({
+      focusMusicEnabled: true,
+      focusMusicSource: 'yandex',
+      focusYandexEmbedUrl: normalized,
+      focusYandexPlayerOpen: true,
+    });
     setFocusYandexDraft(normalized);
     setFocusMusicError(null);
   };
@@ -283,7 +288,7 @@ export default function ProfileClient() {
           <p className="mb-3 text-xs leading-relaxed text-[var(--text-muted)]">
             {t('strictnessControlHint')}
           </p>
-          <div role="radiogroup" aria-label={t('strictnessControlTitle')} className="grid grid-cols-2 gap-2">
+          <div role="radiogroup" aria-label={t('strictnessControlTitle')} className={styles.strictnessGrid}>
             {strictnessOptions.map((mode) => {
               const checked = selectedStrictness === mode;
               return (
@@ -293,7 +298,7 @@ export default function ProfileClient() {
                   role="radio"
                   aria-checked={checked}
                   onClick={() => chooseStrictness(mode)}
-                  className="tactile-button selection-control px-3 text-left text-sm"
+                  className={`tactile-button selection-control ${styles.strictnessOption}`}
                 >
                   {t(`strictness.${mode}`)}
                 </button>
@@ -362,7 +367,7 @@ export default function ProfileClient() {
         </p>
 
         <details className="mt-3 tactile-card p-4">
-          <summary className="cursor-pointer text-sm font-medium text-[var(--text-primary)]">
+          <summary className="inline-flex min-h-11 w-full cursor-pointer items-center text-sm font-medium text-[var(--text-primary)]">
             {t('progressDetailsSummary')}
           </summary>
           <div className="mt-4 space-y-4">
@@ -433,7 +438,7 @@ export default function ProfileClient() {
         </div>
 
         <details className="tactile-card p-4">
-          <summary className="cursor-pointer text-sm font-medium text-[var(--text-primary)]">
+          <summary className="inline-flex min-h-11 w-full cursor-pointer items-center text-sm font-medium text-[var(--text-primary)]">
             {t('aiTechnicalSummary')}
           </summary>
           <div className="mt-4 space-y-3 text-xs leading-relaxed text-[var(--text-muted)]">
@@ -643,13 +648,14 @@ export default function ProfileClient() {
                 </div>
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   <button type="button" onClick={handleYandexMusicApply} className="tactile-button inline-flex min-h-11 w-full items-center justify-center px-3 text-center text-xs text-[var(--accent-brand)] hover:bg-[var(--accent-brand-soft)]">{t('focusMusicYandexApply')}</button>
-                  <button type="button" onClick={openYandexMusicPage} className="tactile-button inline-flex min-h-11 w-full items-center justify-center px-3 text-center text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]">{t('focusMusicYandexLogin')}</button>
+                  <button type="button" onClick={() => openYandexMusicPage(focusYandexDraft || profile.focusYandexEmbedUrl)} className="tactile-button inline-flex min-h-11 w-full items-center justify-center px-3 text-center text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]">{t('focusMusicYandexLogin')}</button>
                 </div>
               </div>
               <YandexMusicPlayer url={profile.focusYandexEmbedUrl} title={t('focusMusicYandexPlayerTitle')} />
               {focusMusicError && (
                 <p className="rounded-lg border border-[var(--state-risk-border)] bg-[var(--state-risk-soft)] px-3 py-2 text-[10px] leading-relaxed text-[var(--state-risk)]">{focusMusicError}</p>
               )}
+              <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">{t('focusMusicYandexFallback')}</p>
               <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">{t('focusMusicYandexEndStops')}</p>
             </div>
           ) : (

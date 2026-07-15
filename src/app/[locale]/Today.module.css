@@ -315,12 +315,11 @@
 }
 
 .shell :global(.today-task-summary-copy small) {
-  overflow: hidden;
   color: var(--text-muted);
   font-size: 11px;
   line-height: 1.25;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .shell :global(.today-task-summary-progress) {

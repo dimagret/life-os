@@ -56,7 +56,7 @@ export function BottomNav() {
                   strokeWidth={isActive ? 2 : 1.7}
                 />
               </span>
-              <span className="max-w-full truncate text-[10px] font-medium leading-none tracking-wide">
+              <span className="max-w-full text-center text-[11px] font-medium leading-[1.2] tracking-wide">
                 {label}
               </span>
             </Link>

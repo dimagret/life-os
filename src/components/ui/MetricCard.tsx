@@ -17,7 +17,7 @@ function getRiskScaleStyle(value: string | number): { color: string } {
   const percentage = clampPercentage(value);
   const hue = 145 - percentage * 1.45;
   const lightness = 34 + Math.min(percentage, 55) * 0.08;
-  return { color: `hsl(${hue} 68% ${lightness}%)` };
+  return { color: `color-mix(in srgb, hsl(${hue} 68% ${lightness}%) 72%, var(--text-primary))` };
 }
 
 export function MetricCard({ label, value, suffix, variant = 'default', unitLabel }: MetricCardProps) {

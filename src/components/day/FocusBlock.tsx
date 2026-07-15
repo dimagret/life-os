@@ -622,9 +622,12 @@ export function FocusBlock({
           {t('yandexMusicEmpty')}
         </p>
       )}
+      <p className="mt-3 text-[10px] leading-relaxed text-[var(--text-muted)]">
+        {t('yandexMusicSlow')}
+      </p>
       <button
         type="button"
-        onClick={openYandexMusicPage}
+        onClick={() => openYandexMusicPage(yandexEmbedUrl)}
         className="focus-secondary-button mt-3 inline-flex w-full items-center justify-center px-4 text-xs font-medium"
       >
         {t('yandexMusicOpenExternal')}

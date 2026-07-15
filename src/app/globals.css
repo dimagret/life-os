@@ -1271,7 +1271,7 @@ button:disabled,
 
   .focus-more-menu button {
     width: 100%;
-    min-height: 40px;
+    min-height: 44px;
     display: flex;
     align-items: center;
     gap: 9px;

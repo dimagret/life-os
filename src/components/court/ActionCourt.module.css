@@ -12,8 +12,10 @@
 }
 
 .historyLink {
+  display: inline-flex;
   flex: 0 0 auto;
-  min-height: 36px;
+  min-height: 44px;
+  align-items: center;
   padding: 9px 11px;
   border: 1px solid var(--border-subtle);
   border-radius: 11px;
@@ -137,16 +139,14 @@
 }
 
 .promiseCopy {
-  display: -webkit-box;
+  display: block;
   margin-top: 4px;
-  overflow: hidden;
   color: var(--text-primary);
   font-size: 12px;
   font-weight: 590;
   line-height: 1.42;
+  overflow-wrap: anywhere;
   text-wrap: pretty;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
 }
 
 .taskRow {
@@ -270,8 +270,10 @@
 }
 
 .historyLink {
+  display: inline-flex;
   flex: 0 0 auto;
-  min-height: 36px;
+  min-height: 44px;
+  align-items: center;
   padding: 9px 11px;
   border: 1px solid var(--border-subtle);
   border-radius: 11px;
@@ -285,9 +287,6 @@
     font-size: 1.8rem;
   }
 
-  .promiseCopy {
-    -webkit-line-clamp: 1;
-  }
 
   .statusGrid {
     gap: 5px;

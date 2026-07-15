@@ -65,7 +65,7 @@
   padding: 6px 9px;
   border: 1px solid var(--state-border);
   border-radius: 999px;
-  color: var(--state-color);
+  color: color-mix(in srgb, var(--state-color) 76%, var(--text-primary));
   background: var(--state-soft);
   font-size: 10px;
   font-weight: 650;

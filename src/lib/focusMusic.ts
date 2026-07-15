@@ -53,11 +53,13 @@ function canUseAudio(): boolean {
   return typeof window !== 'undefined';
 }
 
-export function openYandexMusicPage(): boolean {
+export function openYandexMusicPage(rawUrl?: string | null): boolean {
   if (!canUseAudio()) return false;
 
+  const pageUrl = getYandexMusicPageUrl(rawUrl) ?? YANDEX_MUSIC_OPEN_URL;
+
   try {
-    const openedWindow = window.open(YANDEX_MUSIC_OPEN_URL, '_blank');
+    const openedWindow = window.open(pageUrl, '_blank');
     if (openedWindow) {
       try {
         openedWindow.opener = null;
@@ -70,7 +72,7 @@ export function openYandexMusicPage(): boolean {
     // Fall back to same-tab navigation below.
   }
 
-  window.location.assign(YANDEX_MUSIC_OPEN_URL);
+  window.location.assign(pageUrl);
   return false;
 }
 
@@ -234,6 +236,44 @@ export function normalizeYandexMusicEmbedUrl(rawUrl?: string | null): string | n
   const playlistId = playlistsIndex >= 0 ? segments[playlistsIndex + 1] : undefined;
   if (userId && playlistId) {
     return `${YANDEX_MUSIC_IFRAME_ORIGIN}/iframe/playlist/${userId}/${playlistId}`;
+  }
+
+  return null;
+}
+
+export function getYandexMusicPageUrl(rawUrl?: string | null): string | null {
+  const embedUrl = normalizeYandexMusicEmbedUrl(rawUrl);
+  if (!embedUrl) return null;
+
+  let url: URL;
+  try {
+    url = new URL(embedUrl);
+  } catch {
+    return null;
+  }
+
+  const hashSegments = url.hash.slice(1).split('/').filter(Boolean);
+  const [hashType, hashFirst, hashSecond] = hashSegments;
+  if (hashType === 'track' && hashFirst && hashSecond) {
+    return `${YANDEX_MUSIC_HOME_URL}/album/${hashSecond}/track/${hashFirst}`;
+  }
+  if (hashType === 'album' && hashFirst) {
+    return `${YANDEX_MUSIC_HOME_URL}/album/${hashFirst}`;
+  }
+  if (hashType === 'playlist' && hashFirst && hashSecond) {
+    return `${YANDEX_MUSIC_HOME_URL}/users/${hashFirst}/playlists/${hashSecond}`;
+  }
+
+  const segments = url.pathname.split('/').filter(Boolean);
+  if (segments[0] !== 'iframe') return null;
+  if (segments[1] === 'album' && segments[2]) {
+    if (segments[3] === 'track' && segments[4]) {
+      return `${YANDEX_MUSIC_HOME_URL}/album/${segments[2]}/track/${segments[4]}`;
+    }
+    return `${YANDEX_MUSIC_HOME_URL}/album/${segments[2]}`;
+  }
+  if (segments[1] === 'playlist' && segments[2] && segments[3]) {
+    return `${YANDEX_MUSIC_HOME_URL}/users/${segments[2]}/playlists/${segments[3]}`;
   }
 
   return null;

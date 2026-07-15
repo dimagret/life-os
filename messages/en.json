@@ -267,7 +267,7 @@
     "yandexMusicOpenExternal": "Open Yandex Music",
     "yandexMusicEmpty": "No Yandex Music player is selected in profile yet.",
     "yandexMusicInvalid": "The saved URL is not a Yandex Music iframe player.",
-    "yandexMusicSlow": "If Yandex Music did not open, check your account sign-in on music.yandex.ru.",
+    "yandexMusicSlow": "If the embedded player shows a Yandex error, open the selected track or collection on its own page.",
     "yandexMusicExternalMode": "The timer cannot control the player buttons. Playback stops when the player is closed.",
     "whatDistracted": "What distracted you?",
     "distractions": {
@@ -417,6 +417,7 @@
     "focusMusicYandexSpecificLink": "Use a specific track, album, or public playlist link; the Yandex Music home page cannot be embedded.",
     "focusMusicYandexPlayerTitle": "Yandex Music player",
     "focusMusicYandexLogin": "Open in Yandex",
+    "focusMusicYandexFallback": "If the embedded player shows a Yandex error, open the selected track or collection on its own page.",
     "focusMusicYandexUseBuiltin": "Use built-in background",
     "focusMusicYandexEndStops": "Playback is controlled inside the player. Music stops when the player is closed.",
     "focusMusicUrlSource": "Audio URL",

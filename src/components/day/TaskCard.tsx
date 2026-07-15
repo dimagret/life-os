@@ -146,7 +146,7 @@ export function TaskCard({ task, roleLabel, onUpdate, onAddProof, onStartFocus }
             <button
               type="button"
               onClick={() => setShowProofInput(!showProofInput)}
-              className="text-xs state-text hover:opacity-80 transition-opacity leading-snug"
+              className="inline-flex min-h-11 items-center text-xs state-text hover:opacity-80 transition-opacity leading-snug"
             >
               {t('addProof')}
             </button>
