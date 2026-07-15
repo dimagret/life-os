@@ -63,14 +63,14 @@ export interface UserProfile {
   focusMusicUrl?: string;
   /** Play configured background music while the focus timer is running. */
   focusMusicEnabled?: boolean;
-  /** Built-in Web Audio background, a direct external audio file, or external Yandex Music page mode. */
+  /** Audio source. External values are kept only to migrate older profiles. */
   focusMusicSource?: 'builtin' | 'url' | 'yandex';
   /** Legacy normalized Yandex Music iframe URL kept for migration/backward compatibility. */
   focusYandexEmbedUrl?: string;
   /** Legacy preference kept for migration/backward compatibility; active UI uses external Yandex mode. */
   focusYandexPlayerOpen?: boolean;
-  /** Built-in focus background variant. */
-  focusMusicPreset?: 'softNoise' | 'deepNoise' | 'lowPulse';
+  /** Built-in focus soundscape selected from the Life OS catalog. */
+  focusMusicPreset?: 'softNoise' | 'deepNoise' | 'lowPulse' | 'rain' | 'airFlow' | 'night';
   /** What to do with focus music when the timer reaches zero. */
   focusMusicEndBehavior?: 'fade' | 'continue';
   /** In-app reminders for unfinished daily tasks. */

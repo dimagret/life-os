@@ -308,3 +308,113 @@
   font-weight: 560;
   line-height: 1.2;
 }
+.catalogCount {
+  display: inline-flex;
+  min-width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border: 1px solid var(--state-border);
+  border-radius: 999px;
+  color: var(--state-color);
+  background: var(--state-soft);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.focusCatalog {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.focusTrack {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  min-width: 0;
+  min-height: 92px;
+  gap: 4px 10px;
+  padding: 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  background: var(--surface-card);
+  text-align: left;
+  transition: border-color 140ms ease, background-color 140ms ease, transform 140ms ease;
+}
+
+.focusTrack:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+}
+
+.focusTrack:active {
+  transform: translateY(1px);
+}
+
+.focusTrack:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.focusTrack[aria-pressed='true'] {
+  border-color: var(--state-border);
+  color: var(--state-color);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--state-soft) 78%, transparent), transparent 72%),
+    var(--surface-card);
+  box-shadow: inset 3px 0 0 var(--state-color);
+}
+
+.trackIcon {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  grid-row: 1 / span 2;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, currentColor 26%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+.trackCopy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.trackTitle {
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 680;
+  line-height: 1.25;
+}
+
+.trackDescription {
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.trackAction {
+  color: currentColor;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 390px) {
+  .focusCatalog {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .focusTrack {
+    min-height: 78px;
+  }
+}

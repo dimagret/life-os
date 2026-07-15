@@ -6,20 +6,20 @@ import type { ActiveFocusPhase, FocusBlock as FocusBlockType, FocusEarlyExitReas
 import { stripLegacyTodayFromTaskTitle } from '@/lib/utils';
 import { playTimerEndChime } from '@/lib/sound';
 import { hapticsImpactLight } from '@/lib/capacitor/native';
-import { loadActiveFocusSession, loadUserProfile, saveActiveFocusSession } from '@/lib/storage';
+import { loadActiveFocusSession, loadUserProfile, saveActiveFocusSession, saveUserProfile } from '@/lib/storage';
 import {
-  DEFAULT_YANDEX_MUSIC_EMBED_URL,
+  FOCUS_MUSIC_CATALOG,
   fadeOutFocusMusic,
-  openYandexMusicPage,
   pauseFocusMusic,
   playFocusMusic,
   stopFocusMusic,
+  type FocusMusicPreset,
 } from '@/lib/focusMusic';
-import { YandexMusicPlayer } from '@/components/music/YandexMusicPlayer';
 import {
   ArrowLeft,
   CheckCircle2,
   MoreHorizontal,
+  Music2,
   Pause,
   Play,
   RotateCcw,
@@ -308,14 +308,14 @@ export function FocusBlock({
     Boolean(taskDetail?.trim()) &&
     taskDetail!.trim() !== taskTitle.trim() &&
     taskDetail!.trim() !== taskTitleDisplay;
-  const yandexEmbedUrl = focusMusicProfile?.focusYandexEmbedUrl ?? DEFAULT_YANDEX_MUSIC_EMBED_URL;
-  const showYandexPlayerPanel =
+  const focusMusicPreset = FOCUS_MUSIC_CATALOG.includes(focusMusicProfile?.focusMusicPreset as FocusMusicPreset)
+    ? (focusMusicProfile?.focusMusicPreset as FocusMusicPreset)
+    : 'softNoise';
+  const showFocusMusicPanel =
     Boolean(focusMusicProfile?.focusMusicEnabled) &&
-    focusMusicProfile?.focusMusicSource === 'yandex' &&
     (phase === 'running' ||
       phase === 'paused' ||
-      (phase === 'completed' && focusMusicProfile.focusMusicEndBehavior === 'continue'));
-
+      (phase === 'completed' && focusMusicProfile?.focusMusicEndBehavior === 'continue'));
   const idleDisplaySeconds = selectedDuration * 60;
 
   const ringProgress = useMemo(() => {
@@ -443,10 +443,6 @@ export function FocusBlock({
       return;
     }
 
-    if (profile.focusMusicSource === 'yandex') {
-      stopFocusMusic();
-      return;
-    }
 
     if (phase === 'running') {
       void playFocusMusic(profile);
@@ -603,41 +599,51 @@ export function FocusBlock({
     </div>
   );
 
-  const yandexMusicBlock = showYandexPlayerPanel ? (
-    <div className="focus-detail-card mt-6 p-4">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-            {t('yandexMusicTitle')}
-          </p>
-          <p className="mt-1 text-[10px] leading-relaxed text-[var(--text-muted)]">
-            {t('yandexMusicHint')}
-          </p>
-        </div>
-      </div>
-      {yandexEmbedUrl ? (
-        <YandexMusicPlayer url={yandexEmbedUrl} title={t('yandexMusicTitle')} className="mt-3" />
-      ) : (
-        <p className="mt-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] px-3 py-3 text-xs text-[var(--text-muted)]">
-          {t('yandexMusicEmpty')}
+  const handleFocusMusicPresetChange = (preset: FocusMusicPreset) => {
+    if (!focusMusicProfile) return;
+    const nextProfile: UserProfile = {
+      ...focusMusicProfile,
+      focusMusicSource: 'builtin',
+      focusMusicPreset: preset,
+    };
+    saveUserProfile(nextProfile);
+    setFocusMusicProfile(nextProfile);
+    stopFocusMusic();
+    if (phase === 'running') {
+      void playFocusMusic(nextProfile);
+    }
+  };
+
+  const focusMusicBlock = showFocusMusicPanel && focusMusicProfile ? (
+    <div className="focus-detail-card mt-6 flex items-center gap-3 p-3">
+      <span className="inline-flex h-9 w-9 flex-none items-center justify-center rounded-xl border border-[var(--state-border)] bg-[var(--state-soft)] text-[var(--state-color)]">
+        <Music2 className="h-4 w-4" aria-hidden="true" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+          {t('musicTitle')}
         </p>
-      )}
-      <p className="mt-3 text-[10px] leading-relaxed text-[var(--text-muted)]">
-        {t('yandexMusicSlow')}
-      </p>
-      <button
-        type="button"
-        onClick={() => openYandexMusicPage(yandexEmbedUrl)}
-        className="focus-secondary-button mt-3 inline-flex w-full items-center justify-center px-4 text-xs font-medium"
+        <p className="mt-0.5 truncate text-xs font-medium text-[var(--text-primary)]">
+          {t('musicTracks.' + focusMusicPreset)}
+        </p>
+      </div>
+      <label className="sr-only" htmlFor="focus-music-preset">
+        {t('musicSelect')}
+      </label>
+      <select
+        id="focus-music-preset"
+        value={focusMusicPreset}
+        onChange={(event) => handleFocusMusicPresetChange(event.target.value as FocusMusicPreset)}
+        className="tactile-field min-h-10 max-w-[44%] rounded-xl px-2 text-[11px] text-[var(--text-secondary)]"
       >
-        {t('yandexMusicOpenExternal')}
-      </button>
-      <p className="mt-2 text-[10px] leading-relaxed text-[var(--text-muted)]">
-        {t('yandexMusicExternalMode')}
-      </p>
+        {FOCUS_MUSIC_CATALOG.map((preset) => (
+          <option key={preset} value={preset}>
+            {t('musicTracks.' + preset)}
+          </option>
+        ))}
+      </select>
     </div>
   ) : null;
-
   if (phase === 'idle') {
     return (
       <div className="focus-immersive-page flex flex-col">
@@ -766,7 +772,7 @@ export function FocusBlock({
 
           {centerVisual(timeLeft, paused)}
 
-          {yandexMusicBlock}
+          {focusMusicBlock}
 
           <div className="focus-control-panel mx-auto mt-10">
             {paused ? (
@@ -864,7 +870,7 @@ export function FocusBlock({
             </p>
           </div>
 
-          {yandexMusicBlock}
+          {focusMusicBlock}
 
           <div className="flex flex-col gap-3">
             <button
