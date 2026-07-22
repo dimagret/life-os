@@ -9,6 +9,7 @@ import {
   FocusBlock,
   ActiveFocusSession,
   ActionCourtReview,
+  WeeklyGrowthReview,
   Debt,
   RecoveryQuest,
   KnowledgeModule,
@@ -23,6 +24,35 @@ import {
   normalizeYandexMusicEmbedUrl,
 } from '@/lib/focusMusic';
 
+export const LIFEOS_STATE_CHANGED_EVENT = 'lifeos:state-changed';
+const STORAGE_SCOPE_KEY = 'lifeos:accountScope';
+let activeStorageScope: string | null | undefined;
+
+export function setStorageAccountScope(userId: string | null): void {
+  activeStorageScope = userId;
+  if (!canUseStorage()) return;
+  if (userId) localStorage.setItem(STORAGE_SCOPE_KEY, userId);
+  else localStorage.removeItem(STORAGE_SCOPE_KEY);
+}
+
+export function getStorageAccountScope(): string | null {
+  if (activeStorageScope !== undefined) return activeStorageScope;
+  if (!canUseStorage()) return null;
+  activeStorageScope = localStorage.getItem(STORAGE_SCOPE_KEY);
+  return activeStorageScope;
+}
+
+function scopedStorageKey(key: string): string {
+  const scope = getStorageAccountScope();
+  return scope ? `lifeos:${scope}:${key.replace(/^lifeos:/, '')}` : key;
+}
+
+function notifyStateChanged(): void {
+  if (!canUseStorage() || typeof window.dispatchEvent !== 'function') return;
+  window.dispatchEvent(new Event(LIFEOS_STATE_CHANGED_EVENT));
+}
+
+
 // ——— SSR safety ———
 
 export function canUseStorage(): boolean {
@@ -32,7 +62,7 @@ export function canUseStorage(): boolean {
 export function getItem(key: string): string | null {
   if (!canUseStorage()) return null;
   try {
-    return localStorage.getItem(key);
+    return localStorage.getItem(scopedStorageKey(key));
   } catch {
     return null;
   }
@@ -41,7 +71,8 @@ export function getItem(key: string): string | null {
 export function setItem(key: string, value: string): void {
   if (!canUseStorage()) return;
   try {
-    localStorage.setItem(key, value);
+    localStorage.setItem(scopedStorageKey(key), value);
+    notifyStateChanged();
   } catch {
     // silently fail if storage is unavailable
   }
@@ -134,6 +165,11 @@ function migrateFocusMusicProfile(p: UserProfile): UserProfile {
     patch.focusYandexPlayerOpen = true;
   }
 
+  // Life OS now uses its own controllable soundscape catalog. External providers
+  // remain readable for backward compatibility, but active playback is migrated.
+  if (p.focusMusicSource !== 'builtin') {
+    patch.focusMusicSource = 'builtin';
+  }
   if (Object.keys(patch).length === 0) return p;
 
   const next = { ...p, ...patch };
@@ -398,6 +434,28 @@ export function saveActionCourtReviews(reviews: ActionCourtReview[]): void {
   setItem(STORAGE_KEYS.actionCourtReviews, JSON.stringify(reviews));
 }
 
+// WeeklyGrowthReviews
+
+export function loadWeeklyGrowthReviews(): WeeklyGrowthReview[] {
+  const raw = getItem(STORAGE_KEYS.weeklyGrowthReviews);
+  return safeJsonParse(raw, []);
+}
+
+export function saveWeeklyGrowthReviews(reviews: WeeklyGrowthReview[]): void {
+  setItem(STORAGE_KEYS.weeklyGrowthReviews, JSON.stringify(reviews));
+}
+
+export function saveWeeklyGrowthReview(review: WeeklyGrowthReview): WeeklyGrowthReview {
+  const reviews = loadWeeklyGrowthReviews();
+  const index = reviews.findIndex(
+    (item) => item.goalId === review.goalId && item.weekStart === review.weekStart,
+  );
+  if (index === -1) reviews.push(review);
+  else reviews[index] = review;
+  saveWeeklyGrowthReviews(reviews);
+  return review;
+}
+
 // ——— Debts ———
 
 export function loadDebts(): Debt[] {
@@ -593,28 +651,31 @@ export function snapshotAllStorage(): StorageSnapshot {
   if (!canUseStorage()) return {};
   const snap: StorageSnapshot = {};
   Object.values(STORAGE_KEYS).forEach((key) => {
-    const value = localStorage.getItem(key);
+    const value = localStorage.getItem(scopedStorageKey(key));
     if (value !== null) snap[key] = value;
   });
   return snap;
 }
 
-export function restoreSnapshot(snap: StorageSnapshot): void {
+export function restoreSnapshot(snap: StorageSnapshot, notify = true): void {
   if (!canUseStorage()) return;
   Object.values(STORAGE_KEYS).forEach((key) => {
     const v = snap[key];
+    const storageKey = scopedStorageKey(key);
     if (v === undefined) {
-      localStorage.removeItem(key);
+      localStorage.removeItem(storageKey);
     } else {
-      localStorage.setItem(key, v);
+      localStorage.setItem(storageKey, v);
     }
   });
+  if (notify) notifyStateChanged();
 }
 
 export function resetAllData(): void {
   if (!canUseStorage()) return;
   Object.values(STORAGE_KEYS).forEach((key) => {
-    localStorage.removeItem(key);
+    localStorage.removeItem(scopedStorageKey(key));
   });
+  notifyStateChanged();
 }
 

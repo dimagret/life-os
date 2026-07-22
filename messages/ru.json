@@ -261,6 +261,20 @@
     "start": "Начать фокус",
     "distractionsCount": "Отвлечений: {count}",
     "distracted": "Отвлёкся",
+    "musicTitle": "Фокус-фон",
+    "musicHint": "Звук синхронизирован с таймером",
+    "musicSelect": "Саундскейп",
+    "musicTracks": {
+      "softNoise": "Тихий поток",
+      "deepNoise": "Глубокий фокус",
+      "rain": "Дождь за окном",
+      "airFlow": "Воздушный фон",
+      "lowPulse": "Низкий пульс",
+      "night": "Ночная тишина",
+      "kreamLiquidLab": "KREAM — LIQUID LAB Vol. 8",
+      "gioliAndromeda": "Gioli & Assia — Andromeda",
+      "gioliDiesis": "Gioli & Assia — Diesis"
+    },
     "yandexMusicTitle": "Яндекс Музыка",
     "yandexMusicHint": "Плеер встроен в фокус-сессию. Управляйте воспроизведением прямо здесь.",
     "yandexMusicRefresh": "Обновить",
@@ -282,6 +296,12 @@
     "resultTitle": "Результат блока",
     "resultDuration": "Длительность",
     "resultDistractions": "Отвлечений",
+    "distractionReflectionTitle": "Возврат в фокус",
+    "distractionReflectionHint": "Зафиксируй только то, что поможет скорректировать следующий запуск.",
+    "distractionMinutesLabel": "Сколько минут потеряно примерно",
+    "primaryDistractionLabel": "Главная помеха",
+    "returnActionLabel": "Как вернёшься в задачу",
+    "returnActionPlaceholder": "Например: убрать телефон и начать с 10 минут",
     "resultPlaceholder": "Что сделано за блок?",
     "noResultNote": "Фокус без результата не засчитывается как прогресс.",
     "earlyExitTitle": "Досрочный выход",
@@ -337,6 +357,10 @@
     "createDayOrder": "Собрать день",
     "todayPlanReady": "Сегодняшний план уже сформирован",
     "goToToday": "Перейти к сегодняшнему плану",
+    "edit": "Изменить",
+    "editGoalLabel": "Цель недели",
+    "cancelEdit": "Отмена",
+    "saveEdit": "Сохранить",
     "status": {
       "active": "В работе",
       "paused": "На паузе",
@@ -827,7 +851,52 @@
     "soundToggle": "Звук по окончании таймера",
     "soundHint": "Короткий сигнал и лёгкая вибрация, когда фокус-таймер достигнет нуля.",
     "focusMusicToggle": "Музыка во время фокуса",
-    "focusMusicHint": "По умолчанию вместе с таймером запускается встроенный фон. Внешняя ссылка подходит только для прямого аудиофайла или потока.",
+    "focusSetCatalogTitle": "Музыка во время фокуса",
+    "focusSetCatalogHint": "Три добавленных локальных сета. Нажмите на карточку, чтобы выбрать и проверить.",
+    "focusMusicHint": "Выберите собственный саундскейп Life OS. Он запускается, ставится на паузу и завершается вместе с таймером.",
+    "focusCatalogTitle": "Каталог фокуса",
+    "focusCatalogHint": "Нажмите на карточку, чтобы выбрать и сразу проверить звук.",
+    "focusCatalogPlaying": "Сейчас звучит",
+    "focusCatalogSelected": "Выбрано",
+    "focusCatalogPreview": "Проверить",
+    "focusCatalog": {
+      "softNoise": {
+        "title": "Тихий поток",
+        "description": "Ровный мягкий шум без резких частот"
+      },
+      "deepNoise": {
+        "title": "Глубокий фокус",
+        "description": "Плотный низкий фон для сложной работы"
+      },
+      "rain": {
+        "title": "Дождь за окном",
+        "description": "Рассеянный дождевой слой без мелодии"
+      },
+      "airFlow": {
+        "title": "Воздушный фон",
+        "description": "Лёгкий стабильный поток для чтения"
+      },
+      "lowPulse": {
+        "title": "Низкий пульс",
+        "description": "Спокойный тон с мягкими обертонами"
+      },
+      "night": {
+        "title": "Ночная тишина",
+        "description": "Очень тихий тёмный фон для вечера"
+      },
+      "kreamLiquidLab": {
+        "title": "KREAM — LIQUID LAB Vol. 8",
+        "description": "Электронный сет для ровной работы"
+      },
+      "gioliAndromeda": {
+        "title": "Gioli & Assia — Andromeda",
+        "description": "Театральный сет с размеренным пульсом"
+      },
+      "gioliDiesis": {
+        "title": "Gioli & Assia — Diesis",
+        "description": "Живой сет с электрическим хендпаном с Этны"
+      }
+    },
     "focusMusicSource": "Источник",
     "focusMusicBuiltin": "Встроенный фон",
     "focusMusicYandexSource": "Яндекс Музыка",
@@ -929,6 +998,38 @@
     "monthSectionHint": "Необязательно. Связывает несколько недель, но не нужен для первого дня.",
     "weekSectionHint": "Один внешний результат на ближайшие 7 дней. Из него Life OS соберёт сегодняшний день.",
     "createMonthlyGoal": "Создать цель месяца",
-    "createWeeklyGoal": "Создать цель недели"
+    "createWeeklyGoal": "Создать цель недели",
+    "weeklyGrowth": {
+      "kicker": "Решение недели",
+      "title": "Ограничение и эксперимент",
+      "summary": "Life OS собирает факты из планов, фокуса и разборов. Вы выбираете только следующий проверяемый шаг.",
+      "evidence": {
+        "hypothesis": "Гипотеза",
+        "in_progress": "В работе",
+        "fact": "Факт"
+      },
+      "focusMetric": "Фокус",
+      "resultMetric": "Внешних фактов",
+      "reviewMetric": "Разобрано дней",
+      "distractionMetric": "Главная помеха",
+      "minutesShort": "мин",
+      "noDistraction": "Не отмечена",
+      "setDecision": "Настроить неделю",
+      "editDecision": "Изменить решение",
+      "constraint": "Главное ограничение",
+      "constraintPlaceholder": "Что сейчас сильнее всего тормозит результат?",
+      "experiment": "Один эксперимент",
+      "experimentPlaceholder": "Какое действие проверит ограничение?",
+      "experimentMetric": "Признак проверки",
+      "metricPlaceholder": "Что посчитаем или увидим снаружи?",
+      "commercialAction": "Коммерческий шаг",
+      "commercialPlaceholder": "Например: отправить оффер 10 клиентам",
+      "weekResult": "Итог недели — по желанию",
+      "stopDoing": "Что прекратить",
+      "continueDoing": "Что продолжить",
+      "nextWeekResult": "Следующий внешний результат",
+      "save": "Сохранить решение",
+      "saved": "Сохранено"
+    }
   }
 }

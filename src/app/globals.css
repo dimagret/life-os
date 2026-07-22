@@ -32,7 +32,8 @@
   --icon-lg: 24px;
 }
 
-:root[data-theme="dark"] {
+:root[data-theme="dark"],
+.auth-surface-dark {
   color-scheme: dark;
 
   --bg-primary: #07070C;
@@ -114,6 +115,12 @@
   --shadow-raised: 0 12px 28px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.07);
   --shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.42);
   --shadow-glow: 0 0 34px rgba(188, 167, 255, 0.24);
+}
+
+.auth-surface-dark {
+  min-height: 100dvh;
+  color: var(--text-primary);
+  background: var(--app-bg);
 }
 
 :root[data-theme="light"] {
@@ -872,7 +879,7 @@ button:disabled,
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-lg);
     background:
-      linear-gradient(145deg, color-mix(in srgb, var(--signal-cyan-soft) 34%, transparent), transparent 54%),
+      linear-gradient(145deg, color-mix(in srgb, var(--state-soft) 34%, transparent), transparent 54%),
       var(--surface-card);
     box-shadow: var(--shadow-card);
     backdrop-filter: blur(18px);
@@ -880,13 +887,13 @@ button:disabled,
   }
 
   .focus-context-card {
-    width: min(calc(100% - 2rem), 24rem);
+    width: 100%;
     margin-inline: auto;
   }
 
   .focus-detail-card {
     background:
-      linear-gradient(150deg, color-mix(in srgb, var(--signal-violet-soft) 34%, transparent), transparent 58%),
+      linear-gradient(150deg, color-mix(in srgb, var(--state-soft) 34%, transparent), transparent 58%),
       var(--surface-card);
   }
 
@@ -907,8 +914,8 @@ button:disabled,
   }
 
   .focus-visual-stage {
-    --focus-timer-inner-track: color-mix(in srgb, var(--signal-cyan) 12%, transparent);
-    --focus-timer-inner-outline: color-mix(in srgb, var(--signal-cyan) 30%, var(--border-subtle));
+    --focus-timer-inner-track: color-mix(in srgb, var(--state-color) 12%, transparent);
+    --focus-timer-inner-outline: color-mix(in srgb, var(--state-color) 30%, var(--border-subtle));
     --focus-timer-orbit-track: color-mix(in srgb, var(--border-strong) 64%, transparent);
     position: relative;
     isolation: isolate;
@@ -919,12 +926,12 @@ button:disabled,
     overflow: hidden;
     border-radius: 999px;
     background:
-      radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--signal-cyan) 18%, transparent), transparent 30%),
-      radial-gradient(circle at 50% 68%, color-mix(in srgb, var(--accent-brand) 16%, transparent), transparent 56%),
+      radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--state-color) 18%, transparent), transparent 30%),
+      radial-gradient(circle at 50% 68%, color-mix(in srgb, var(--state-color) 16%, transparent), transparent 56%),
       var(--surface-card);
     box-shadow:
       var(--shadow-card),
-      0 0 46px color-mix(in srgb, var(--signal-cyan) 12%, transparent),
+      0 0 46px color-mix(in srgb, var(--state-color) 12%, transparent),
       inset 0 1px 0 rgba(255, 255, 255, 0.08),
       inset 0 -42px 68px rgba(0, 0, 0, 0.28);
   }
@@ -942,41 +949,41 @@ button:disabled,
   }
 
   :root[data-theme="light"] .focus-visual-stage {
-    --focus-timer-inner-track: color-mix(in srgb, var(--signal-blue) 16%, transparent);
-    --focus-timer-inner-outline: color-mix(in srgb, var(--signal-blue) 52%, transparent);
-    --focus-timer-orbit-track: color-mix(in srgb, var(--signal-blue) 20%, var(--border-subtle));
+    --focus-timer-inner-track: color-mix(in srgb, var(--state-color) 16%, transparent);
+    --focus-timer-inner-outline: color-mix(in srgb, var(--state-color) 52%, transparent);
+    --focus-timer-orbit-track: color-mix(in srgb, var(--state-color) 20%, var(--border-subtle));
     background:
-      radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--signal-cyan) 11%, transparent), transparent 34%),
-      radial-gradient(circle at 50% 64%, color-mix(in srgb, var(--accent-brand) 9%, transparent), transparent 62%);
+      radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--state-color) 11%, transparent), transparent 34%),
+      radial-gradient(circle at 50% 64%, color-mix(in srgb, var(--state-color) 9%, transparent), transparent 62%);
     box-shadow:
-      0 0 42px color-mix(in srgb, var(--accent-brand) 12%, transparent),
-      0 0 54px color-mix(in srgb, var(--signal-cyan) 10%, transparent);
+      0 0 42px color-mix(in srgb, var(--state-color) 12%, transparent),
+      0 0 54px color-mix(in srgb, var(--state-color) 10%, transparent);
   }
 
   :root[data-theme="light"] .focus-visual-stage::after {
     background:
-      radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--signal-cyan) 10%, transparent), transparent 36%),
-      radial-gradient(circle at 50% 68%, color-mix(in srgb, var(--accent-brand) 7%, transparent), transparent 58%);
+      radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--state-color) 10%, transparent), transparent 36%),
+      radial-gradient(circle at 50% 68%, color-mix(in srgb, var(--state-color) 7%, transparent), transparent 58%);
     box-shadow: none;
   }
 
   @media (prefers-color-scheme: light) {
     :root:not([data-theme]) .focus-visual-stage {
-      --focus-timer-inner-track: color-mix(in srgb, var(--signal-blue) 16%, transparent);
-      --focus-timer-inner-outline: color-mix(in srgb, var(--signal-blue) 52%, transparent);
-      --focus-timer-orbit-track: color-mix(in srgb, var(--signal-blue) 20%, var(--border-subtle));
+      --focus-timer-inner-track: color-mix(in srgb, var(--state-color) 16%, transparent);
+      --focus-timer-inner-outline: color-mix(in srgb, var(--state-color) 52%, transparent);
+      --focus-timer-orbit-track: color-mix(in srgb, var(--state-color) 20%, var(--border-subtle));
       background:
-        radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--signal-cyan) 11%, transparent), transparent 34%),
-        radial-gradient(circle at 50% 64%, color-mix(in srgb, var(--accent-brand) 9%, transparent), transparent 62%);
+        radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--state-color) 11%, transparent), transparent 34%),
+        radial-gradient(circle at 50% 64%, color-mix(in srgb, var(--state-color) 9%, transparent), transparent 62%);
       box-shadow:
-        0 0 42px color-mix(in srgb, var(--accent-brand) 12%, transparent),
-        0 0 54px color-mix(in srgb, var(--signal-cyan) 10%, transparent);
+        0 0 42px color-mix(in srgb, var(--state-color) 12%, transparent),
+        0 0 54px color-mix(in srgb, var(--state-color) 10%, transparent);
     }
 
     :root:not([data-theme]) .focus-visual-stage::after {
       background:
-        radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--signal-cyan) 10%, transparent), transparent 36%),
-        radial-gradient(circle at 50% 68%, color-mix(in srgb, var(--accent-brand) 7%, transparent), transparent 58%);
+        radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--state-color) 10%, transparent), transparent 36%),
+        radial-gradient(circle at 50% 68%, color-mix(in srgb, var(--state-color) 7%, transparent), transparent 58%);
       box-shadow: none;
     }
   }
@@ -987,8 +994,8 @@ button:disabled,
     z-index: -2;
     border-radius: inherit;
     background:
-      linear-gradient(120deg, color-mix(in srgb, var(--signal-cyan) 24%, transparent), transparent 48%),
-      linear-gradient(300deg, color-mix(in srgb, var(--accent-brand) 22%, transparent), transparent 54%);
+      linear-gradient(120deg, color-mix(in srgb, var(--state-color) 24%, transparent), transparent 48%),
+      linear-gradient(300deg, color-mix(in srgb, var(--state-color) 22%, transparent), transparent 54%);
     filter: blur(24px);
     opacity: 0.74;
   }
@@ -1021,10 +1028,10 @@ button:disabled,
     width: 7px;
     max-height: 92px;
     border-radius: 999px;
-    background: linear-gradient(180deg, var(--signal-cyan), var(--signal-blue) 54%, var(--accent-brand));
+    background: linear-gradient(180deg, var(--state-color), var(--state-color) 54%, var(--state-color));
     box-shadow:
-      0 0 18px color-mix(in srgb, var(--signal-cyan) 28%, transparent),
-      0 0 30px color-mix(in srgb, var(--accent-brand) 14%, transparent);
+      0 0 18px color-mix(in srgb, var(--state-color) 28%, transparent),
+      0 0 30px color-mix(in srgb, var(--state-color) 14%, transparent);
     opacity: 0.64;
     transform-origin: center;
   }
@@ -1099,7 +1106,7 @@ button:disabled,
     text-align: center;
     font-size: 3.45rem;
     text-shadow:
-      0 0 24px color-mix(in srgb, var(--signal-cyan) 16%, transparent),
+      0 0 24px color-mix(in srgb, var(--state-color) 16%, transparent),
       0 14px 34px rgba(0, 0, 0, 0.42);
   }
 
@@ -1128,8 +1135,16 @@ button:disabled,
     border: 1px solid var(--border-subtle);
   }
 
+  .focus-preset-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
   .focus-preset-button {
-    padding: 0 16px;
+    width: 100%;
+    padding: 0 10px;
+    font-size: 0.875rem;
+    white-space: nowrap;
     color: var(--text-secondary);
     background: color-mix(in srgb, var(--surface-inset) 82%, transparent);
     border: 1px solid var(--border-subtle);
@@ -1137,25 +1152,25 @@ button:disabled,
   }
 
   .focus-preset-button-active {
-    color: var(--signal-cyan);
-    border-color: var(--signal-cyan-border);
+    color: var(--state-color);
+    border-color: var(--state-border);
     background:
-      linear-gradient(135deg, var(--signal-cyan-soft), var(--signal-violet-soft)),
+      linear-gradient(135deg, var(--state-soft), var(--state-soft)),
       var(--surface-inset);
-    box-shadow: 0 0 22px color-mix(in srgb, var(--signal-cyan) 16%, transparent);
+    box-shadow: 0 0 22px color-mix(in srgb, var(--state-color) 16%, transparent);
   }
 
   .focus-primary-button {
     padding: 0 18px;
     color: var(--text-inverse);
-    border: 1px solid color-mix(in srgb, var(--accent-brand) 52%, transparent);
+    border: 1px solid color-mix(in srgb, var(--state-color) 52%, transparent);
     background:
       radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.20), transparent 42%),
-      linear-gradient(135deg, var(--signal-blue), var(--accent-brand));
+      linear-gradient(135deg, var(--state-color), var(--state-color));
     box-shadow:
       var(--shadow-raised),
-      0 0 28px color-mix(in srgb, var(--signal-cyan) 14%, transparent),
-      0 0 34px color-mix(in srgb, var(--accent-brand) 18%, transparent);
+      0 0 28px color-mix(in srgb, var(--state-color) 14%, transparent),
+      0 0 34px color-mix(in srgb, var(--state-color) 18%, transparent);
   }
 
   .focus-secondary-button {
@@ -1175,9 +1190,9 @@ button:disabled,
 
   .focus-success-button {
     padding: 0 14px;
-    color: var(--signal-cyan);
-    border: 1px solid var(--signal-cyan-border);
-    background: var(--signal-cyan-soft);
+    color: var(--state-color);
+    border: 1px solid var(--state-border);
+    background: var(--state-soft);
   }
 
   .focus-danger-button {
@@ -1318,6 +1333,10 @@ button:disabled,
   }
 
   @media (max-width: 360px) {
+    .focus-preset-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .focus-timer-value {
       font-size: 3rem;
     }

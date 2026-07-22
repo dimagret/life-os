@@ -3,6 +3,8 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { routing } from './i18n/routing';
 import { AUTH_COOKIE_NAME, getAuthConfig, verifyAuthSessionCookie } from './lib/auth';
+import { isSupabaseConfigured } from './lib/supabase/config';
+import { refreshSupabaseSession } from './lib/supabase/middleware';
 
 const intlMiddleware = createMiddleware(routing);
 const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
@@ -82,6 +84,40 @@ function isLoginPath(pathname: string): boolean {
   const parts = pathname.split('/').filter(Boolean);
   return parts.length === 2 && localeSet.has(parts[0]) && parts[1] === 'login';
 }
+function isRegisterPath(pathname: string): boolean {
+  const parts = pathname.split('/').filter(Boolean);
+  return parts.length === 2 && localeSet.has(parts[0]) && parts[1] === 'register';
+}
+function isForgotPasswordPath(pathname: string): boolean {
+  const parts = pathname.split('/').filter(Boolean);
+  return parts.length === 2 && localeSet.has(parts[0]) && parts[1] === 'forgot-password';
+}
+function isLegalPath(pathname: string): boolean {
+  const parts = pathname.split('/').filter(Boolean);
+  return parts.length === 3 && localeSet.has(parts[0]) && parts[1] === 'legal';
+}
+
+function isLocaleRootPath(pathname: string): boolean {
+  const parts = pathname.split('/').filter(Boolean);
+  return parts.length === 1 && localeSet.has(parts[0]);
+}
+
+function isSupabasePublicPath(pathname: string): boolean {
+  const parts = pathname.split('/').filter(Boolean);
+  return (
+    isLocaleRootPath(pathname) ||
+    isLoginPath(pathname) ||
+    pathname === '/auth/callback' ||
+    isRegisterPath(pathname) ||
+    isForgotPasswordPath(pathname) ||
+    isLegalPath(pathname) ||
+    (parts.length === 2 && localeSet.has(parts[0]) && parts[1] === 'activation-prototype')
+  );
+}
+
+function copyCookies(from: NextResponse, to: NextResponse) {
+  from.cookies.getAll().forEach((cookie) => to.cookies.set(cookie));
+}
 
 function buildLoginRedirect(request: NextRequest): NextResponse {
   const locale = getPathLocale(request.nextUrl.pathname);
@@ -94,9 +130,38 @@ function buildLoginRedirect(request: NextRequest): NextResponse {
   return NextResponse.redirect(url);
 }
 
-export default async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
+  if (request.nextUrl.pathname === '/auth/callback') {
+    return NextResponse.next();
+  }
+
+  if (isSupabaseConfigured()) {
+    const baseResponse = intlMiddleware(request);
+    const { authenticated, response } = await refreshSupabaseSession(request, baseResponse);
+    const publicPath = isSupabasePublicPath(request.nextUrl.pathname);
+
+    if (!authenticated && !publicPath) {
+      const redirect = buildLoginRedirect(request);
+      copyCookies(response, redirect);
+      return redirect;
+    }
+
+    if (authenticated && (isLoginPath(request.nextUrl.pathname) || isRegisterPath(request.nextUrl.pathname))) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/${getPathLocale(request.nextUrl.pathname)}`;
+      url.search = '';
+      const redirect = NextResponse.redirect(url);
+      copyCookies(response, redirect);
+      return redirect;
+    }
+
+    normalizeAbsoluteHeader(response, request, 'location');
+    normalizeAbsoluteHeader(response, request, 'x-middleware-rewrite');
+    return response;
+  }
   const authConfig = getAuthConfig();
   const loginPath = isLoginPath(request.nextUrl.pathname);
+  const publicPath = isSupabasePublicPath(request.nextUrl.pathname);
 
   if (authConfig.mode === 'disabled' && loginPath) {
     const url = request.nextUrl.clone();
@@ -110,7 +175,7 @@ export default async function middleware(request: NextRequest) {
       authConfig.mode === 'ready' &&
       (await verifyAuthSessionCookie(request.cookies.get(AUTH_COOKIE_NAME)?.value));
 
-    if (!authenticated && !loginPath) {
+    if (!authenticated && !publicPath) {
       return buildLoginRedirect(request);
     }
 

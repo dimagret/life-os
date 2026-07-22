@@ -102,9 +102,9 @@ export function DayCommandCenter({
     <section className={styles.commandCard} aria-labelledby="today-command-title">
       <div className={styles.topline}>
         <div>
-          <p id="today-command-title" className={styles.kicker}>
+          <h2 id="today-command-title" className={styles.kicker}>
             {tToday('nextAction.title')}
-          </p>
+          </h2>
           <p className={styles.progressCopy} aria-live="polite">
             {tDaily('taskProgressClosed', { closed: tasksClosed, total: tasksTotal })}
           </p>
@@ -249,40 +249,42 @@ export function DayCommandCenter({
       </button>
 
       <div id="today-command-details" hidden={!expanded} className={styles.detailsPanel}>
-        <div className={styles.detailBlock}>
-          <span className={styles.detailLabel}>{t('weekGoal')}</span>
-          <p>{weeklyLabel}</p>
-        </div>
-        <div className={styles.detailBlock}>
-          <span className={styles.detailLabel}>{t('weeklyTrajectory')}</span>
-          <p>{trajectoryNote}</p>
-        </div>
-        <div className={styles.detailGrid}>
+        <dl className={styles.detailList}>
           <div className={styles.detailBlock}>
-            <span className={styles.detailLabel}>{t('deadline')}</span>
-            <p>{dayPlan.deadline}</p>
+            <dt className={styles.detailLabel}>{t('weekGoal')}</dt>
+            <dd>{weeklyLabel}</dd>
           </div>
           <div className={styles.detailBlock}>
-            <span className={styles.detailLabel}>{t('failureRisk')}</span>
-            <p>{dayPlan.risk}</p>
+            <dt className={styles.detailLabel}>{t('weeklyTrajectory')}</dt>
+            <dd>{trajectoryNote}</dd>
+          </div>
+        </dl>
+        <dl className={styles.detailGrid}>
+          <div className={styles.detailBlock}>
+            <dt className={styles.detailLabel}>{t('deadline')}</dt>
+            <dd>{dayPlan.deadline}</dd>
           </div>
           <div className={styles.detailBlock}>
-            <span className={styles.detailLabel}>{t('minAction')}</span>
-            <p>{dayPlan.minimumAction}</p>
+            <dt className={styles.detailLabel}>{t('failureRisk')}</dt>
+            <dd>{dayPlan.risk}</dd>
           </div>
           <div className={styles.detailBlock}>
-            <span className={styles.detailLabel}>{t('protection')}</span>
-            <p>{dayPlan.protection}</p>
+            <dt className={styles.detailLabel}>{t('minAction')}</dt>
+            <dd>{dayPlan.minimumAction}</dd>
           </div>
           <div className={styles.detailBlock}>
-            <span className={styles.detailLabel}>{t('reward')}</span>
-            <p>{dayPlan.rewardText}</p>
+            <dt className={styles.detailLabel}>{t('protection')}</dt>
+            <dd>{dayPlan.protection}</dd>
           </div>
           <div className={styles.detailBlock}>
-            <span className={styles.detailLabel}>{t('consequence')}</span>
-            <p>{dayPlan.consequenceText}</p>
+            <dt className={styles.detailLabel}>{t('reward')}</dt>
+            <dd>{dayPlan.rewardText}</dd>
           </div>
-        </div>
+          <div className={styles.detailBlock}>
+            <dt className={styles.detailLabel}>{t('consequence')}</dt>
+            <dd>{dayPlan.consequenceText}</dd>
+          </div>
+        </dl>
       </div>
     </section>
   );

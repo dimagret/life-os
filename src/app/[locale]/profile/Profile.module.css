@@ -308,3 +308,341 @@
   font-weight: 560;
   line-height: 1.2;
 }
+.catalogCount {
+  display: inline-flex;
+  min-width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border: 1px solid var(--state-border);
+  border-radius: 999px;
+  color: var(--state-color);
+  background: var(--state-soft);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.focusCatalog {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.focusTrack {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  min-width: 0;
+  min-height: 92px;
+  gap: 4px 10px;
+  padding: 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  background: var(--surface-card);
+  text-align: left;
+  transition: border-color 140ms ease, background-color 140ms ease, transform 140ms ease;
+}
+
+.focusTrack:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+}
+
+.focusTrack:active {
+  transform: translateY(1px);
+}
+
+.focusTrack:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.focusTrack[aria-pressed='true'] {
+  border-color: var(--state-border);
+  color: var(--state-color);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--state-soft) 78%, transparent), transparent 72%),
+    var(--surface-card);
+  box-shadow: inset 3px 0 0 var(--state-color);
+}
+
+.trackIcon {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  grid-row: 1 / span 2;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, currentColor 26%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+.trackCopy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.trackTitle {
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 680;
+  line-height: 1.25;
+}
+
+.trackDescription {
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.trackAction {
+  color: currentColor;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 390px) {
+  .focusCatalog {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .focusTrack {
+    min-height: 78px;
+  }
+}
+.focusSetSection .focusCatalog {
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  background: var(--surface-card);
+}
+
+.focusSetSection .focusTrack {
+  display: grid;
+  width: 100%;
+  min-height: 64px;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  grid-template-rows: 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 11px 14px;
+  border: 0;
+  border-bottom: 1px solid var(--border-subtle);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.focusSetSection .focusTrack:last-child { border-bottom: 0; }
+
+.focusSetSection .focusTrack[aria-pressed='true'],
+.focusSetSection .focusCatalog:not(:has(.focusTrack[aria-pressed='true'])) .focusTrack:first-child {
+  min-height: 94px;
+  grid-template-columns: 48px minmax(0, 1fr) 42px;
+  padding: 14px;
+  color: var(--state-color);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--state-soft) 86%, transparent), transparent 72%),
+    var(--surface-card);
+  box-shadow: none;
+}
+
+.focusSetSection .focusTrack[aria-pressed='true'] .trackIcon,
+.focusSetSection .focusCatalog:not(:has(.focusTrack[aria-pressed='true'])) .focusTrack:first-child .trackIcon {
+  width: 48px;
+  height: 48px;
+  border-color: var(--state-border);
+  color: var(--state-color);
+  background: var(--state-soft);
+}
+
+.focusSetSection .focusTrack[aria-pressed='true'] .trackCopy,
+.focusSetSection .focusCatalog:not(:has(.focusTrack[aria-pressed='true'])) .focusTrack:first-child .trackCopy {
+  gap: 5px;
+}
+
+.focusSetSection .focusTrack[aria-pressed='true'] .trackTitle,
+.focusSetSection .focusCatalog:not(:has(.focusTrack[aria-pressed='true'])) .focusTrack:first-child .trackTitle {
+  font-size: 13px;
+}
+
+.focusSetSection .focusTrack[aria-pressed='true'] .trackAction,
+.focusSetSection .focusCatalog:not(:has(.focusTrack[aria-pressed='true'])) .focusTrack:first-child .trackAction {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--state-border);
+  border-radius: 999px;
+  color: transparent;
+  background: var(--state-soft);
+}
+
+.focusPlayer {
+  margin-top: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  background: var(--surface-card);
+}
+
+.focusPlayerHero {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 16px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--state-soft) 82%, transparent), transparent 74%);
+}
+
+.playerArtwork {
+  display: inline-flex;
+  width: 64px;
+  height: 64px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--state-border);
+  border-radius: 14px;
+  color: var(--state-color);
+  background: color-mix(in srgb, var(--state-soft) 86%, var(--surface-card));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--state-color) 12%, transparent);
+}
+
+.playerNow,
+.queueCopy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.playerStatus {
+  color: var(--state-color);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.playerTimeline {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 34px;
+  gap: 8px;
+  align-items: center;
+  padding: 12px 16px 4px;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.playerTimeline input {
+  width: 100%;
+  height: 4px;
+  appearance: none;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--state-color) var(--focus-progress), var(--border-subtle) var(--focus-progress));
+  cursor: pointer;
+}
+
+.playerTimeline input::-webkit-slider-thumb {
+  width: 12px;
+  height: 12px;
+  appearance: none;
+  border: 2px solid var(--surface-card);
+  border-radius: 50%;
+  background: var(--state-color);
+}
+
+.playerControls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 9px 16px 14px;
+}
+
+.playerPrimaryControl,
+.playerSecondaryControl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--state-border);
+  color: var(--state-color);
+  background: var(--state-soft);
+}
+
+.playerPrimaryControl {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.playerSecondaryControl {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: var(--text-secondary);
+  border-color: var(--border-subtle);
+  background: transparent;
+}
+
+.playerPrimaryControl:active,
+.playerSecondaryControl:active { transform: scale(0.96); }
+
+.playerQueue { border-top: 1px solid var(--border-subtle); }
+
+.playerQueueTrack {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 26px minmax(0, 1fr) 24px;
+  gap: 10px;
+  align-items: center;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  background: transparent;
+  text-align: left;
+}
+
+.playerQueueTrack:last-child { border-bottom: 0; }
+.playerQueueTrack:hover { background: var(--bg-hover); }
+.playerQueueTrack[aria-pressed='true'] { background: var(--state-soft); }
+
+.queueNumber {
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.queueCopy > span {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.queueCopy > small {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.queueAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--state-color);
+}

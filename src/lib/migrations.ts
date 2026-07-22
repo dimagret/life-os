@@ -20,6 +20,9 @@ const migrations: Record<number, Migration> = {
       // corrupted profile blob — leave it; storage layer has its own fallback.
     }
   },
+  // v3: this additive collection defaults to [] in the storage loader, so no
+  // existing blob needs rewriting.
+  3: () => {},
 };
 
 export function runMigrations(): void {

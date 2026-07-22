@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { getTodayPlan, loadGoals } from '@/lib/storage';
+import { getTodayPlan, loadGoals, updateGoal } from '@/lib/storage';
 import { DayPlan, Goal, GoalHorizon } from '@/types';
 import { GoalBuilder } from '@/components/goals/GoalBuilder';
 import { GoalCard } from '@/components/goals/GoalCard';
+import { WeeklyGrowthCard } from '@/components/goals/WeeklyGrowthCard';
 import { PageSkeleton } from '@/components/ui/Skeleton';
 import styles from './Goals.module.css';
 
@@ -36,6 +37,11 @@ export default function GoalsClient() {
 
   const handleBuilderComplete = () => {
     setBuilderHorizon(null);
+    refreshGoals();
+  };
+
+  const handleWeeklyGoalUpdate = (goalId: string, patch: Pick<Goal, 'title' | 'externalResult'>) => {
+    updateGoal(goalId, patch);
     refreshGoals();
   };
 
@@ -79,7 +85,14 @@ export default function GoalsClient() {
           </div>
 
           {activeWeekly ? (
-            <GoalCard goal={activeWeekly} hasTodayPlan={todayPlan?.goalId === activeWeekly.id} />
+            <>
+              <GoalCard
+                goal={activeWeekly}
+                hasTodayPlan={todayPlan?.goalId === activeWeekly.id}
+                onUpdate={(patch) => handleWeeklyGoalUpdate(activeWeekly.id, patch)}
+              />
+              <WeeklyGrowthCard goal={activeWeekly} />
+            </>
           ) : (
             <button
               type="button"
