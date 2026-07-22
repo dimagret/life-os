@@ -69,7 +69,7 @@ export function TodayMetrics({ profile, debtsCount }: TodayMetricsProps) {
           {t('metrics.feedbackNote')}
         </p>
 
-        <div className="status-metric-strip mt-4 grid grid-cols-3 gap-2">
+        <dl className="status-metric-strip mt-4 grid grid-cols-3 gap-2">
           <StatusCapsule label={t('metrics.streak')} value={streak} />
           <StatusCapsule label={t('metrics.xp')} value={xp} />
           <StatusCapsule
@@ -77,7 +77,7 @@ export function TodayMetrics({ profile, debtsCount }: TodayMetricsProps) {
             value={debtsCount}
             tone={debtsCount > 0 ? 'deception' : 'victory'}
           />
-        </div>
+        </dl>
       </CardContent>
     </Card>
   );
@@ -145,12 +145,12 @@ function StatusCapsule({
       data-state={tone}
       className="status-capsule flex min-w-0 flex-col justify-center px-3 py-2 text-center"
     >
-      <span className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
+      <dt className="m-0 text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
         {label}
-      </span>
-      <span className={`mt-1 text-base font-bold leading-none tabular-nums ${tone ? 'state-text' : 'text-[var(--text-primary)]'}`}>
+      </dt>
+      <dd className={`m-0 mt-1 text-base font-bold leading-none tabular-nums ${tone ? 'state-text' : 'text-[var(--text-primary)]'}`}>
         {value}
-      </span>
+      </dd>
     </div>
   );
 }

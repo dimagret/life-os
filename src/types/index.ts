@@ -9,6 +9,25 @@ export type UiState =
 
 export type StrictnessMode = 'soft' | 'standard' | 'hard' | 'owner';
 
+export type ActivationMode = 'gentle' | 'base' | 'intensive';
+
+export interface ActivationAssessment {
+  profileId: string;
+  mode: ActivationMode;
+  cadence: string;
+  sabotage: string[];
+  distractions: string[];
+  focusMinutes: number;
+  dailyMinutes: number;
+  energy: string;
+  program: { focus: number; blocks: number; volume: number; tasks: number };
+  weeklyGoal: string;
+  successCriterion: string;
+  goalReason?: string;
+  startTime: string;
+  completedAt: string;
+}
+
 export type Verdict =
   | 'self_victory'
   | 'partial_victory'
@@ -48,6 +67,8 @@ export interface UserProfile {
   /** True if the user pressed «Пропустить» during onboarding instead of finishing it. */
   skippedOnboarding: boolean;
   contractAccepted: boolean;
+  /** Diagnostic result created by the production activation journey. */
+  activation?: ActivationAssessment;
   strictnessMode: StrictnessMode;
   level: number;
   totalXp: number;
@@ -63,14 +84,14 @@ export interface UserProfile {
   focusMusicUrl?: string;
   /** Play configured background music while the focus timer is running. */
   focusMusicEnabled?: boolean;
-  /** Built-in Web Audio background, a direct external audio file, or external Yandex Music page mode. */
+  /** Audio source. External values are kept only to migrate older profiles. */
   focusMusicSource?: 'builtin' | 'url' | 'yandex';
   /** Legacy normalized Yandex Music iframe URL kept for migration/backward compatibility. */
   focusYandexEmbedUrl?: string;
   /** Legacy preference kept for migration/backward compatibility; active UI uses external Yandex mode. */
   focusYandexPlayerOpen?: boolean;
-  /** Built-in focus background variant. */
-  focusMusicPreset?: 'softNoise' | 'deepNoise' | 'lowPulse';
+  /** Built-in focus soundscape selected from the Life OS catalog. */
+  focusMusicPreset?: 'softNoise' | 'deepNoise' | 'lowPulse' | 'rain' | 'airFlow' | 'night' | 'kreamLiquidLab' | 'gioliAndromeda' | 'gioliDiesis';
   /** What to do with focus music when the timer reaches zero. */
   focusMusicEndBehavior?: 'fade' | 'continue';
   /** In-app reminders for unfinished daily tasks. */
@@ -109,6 +130,35 @@ export interface Goal {
   horizon?: GoalHorizon;
   /** Опциональная ссылка weekly → monthly. */
   parentGoalId?: string;
+}
+
+export type WeeklyEvidenceStatus = 'hypothesis' | 'in_progress' | 'fact';
+
+export interface WeeklyGrowthReview {
+  id: string;
+  goalId: string;
+  /** Monday of the reviewed local week, stored as YYYY-MM-DD. */
+  weekStart: string;
+  constraint: string;
+  experiment: string;
+  experimentMetric: string;
+  /** Used only for money and business goals. */
+  commercialAction?: string;
+  stopDoing?: string;
+  continueDoing?: string;
+  nextWeekResult?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WeeklyGrowthSnapshot {
+  plannedMinutes: number;
+  focusedMinutes: number;
+  externalResults: number;
+  commercialActions: number;
+  reviewedDays: number;
+  dominantDistraction?: string;
+  evidenceStatus: WeeklyEvidenceStatus;
 }
 
 export interface Task {
@@ -232,6 +282,12 @@ export interface FocusBlock {
   earlyExitReason?: FocusEarlyExitReason;
   /** Small repair step chosen after ending the timer early. */
   salvageAction?: string;
+  /** Approximate time lost to recorded distractions. */
+  distractionMinutes?: number;
+  /** Most important distraction tag selected after the session. */
+  primaryDistraction?: string;
+  /** Concrete action that helps return to the task next time. */
+  returnAction?: string;
 }
 
 export interface FailureReason {

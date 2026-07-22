@@ -93,21 +93,22 @@ export function DailyPlan({ tasks, onUpdateTask, onAddProof, onStartFocus }: Dai
 
               {activeTasks.length > 0 ? (
                 <div className="space-y-3">
-                  {closedTasks.length > 0 ? (
-                    <h4 className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">
-                      {t('activeSection')}
-                    </h4>
-                  ) : null}
-                  {activeTasks.map((task) => (
-                    <TaskCard
-                      key={task.id}
-                      task={task}
-                      roleLabel={t(resolveTaskBlockRole(task) === 'main' ? 'mainRole' : 'supportRole')}
-                      onUpdate={onUpdateTask}
-                      onAddProof={onAddProof}
-                      onStartFocus={onStartFocus}
-                    />
-                  ))}
+                  <h4 className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">
+                    {t('activeSection')}
+                  </h4>
+                  <ul className="space-y-3">
+                    {activeTasks.map((task) => (
+                      <li key={task.id}>
+                        <TaskCard
+                          task={task}
+                          roleLabel={t(resolveTaskBlockRole(task) === 'main' ? 'mainRole' : 'supportRole')}
+                          onUpdate={onUpdateTask}
+                          onAddProof={onAddProof}
+                          onStartFocus={onStartFocus}
+                        />
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               ) : null}
 
@@ -116,16 +117,19 @@ export function DailyPlan({ tasks, onUpdateTask, onAddProof, onStartFocus }: Dai
                   <h4 className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">
                     {t('completedSection')}
                   </h4>
-                  {closedTasks.map((task) => (
-                    <TaskCard
-                      key={task.id}
-                      task={task}
-                      roleLabel={t(resolveTaskBlockRole(task) === 'main' ? 'mainRole' : 'supportRole')}
-                      onUpdate={onUpdateTask}
-                      onAddProof={onAddProof}
-                      onStartFocus={onStartFocus}
-                    />
-                  ))}
+                  <ul className="space-y-3">
+                    {closedTasks.map((task) => (
+                      <li key={task.id}>
+                        <TaskCard
+                          task={task}
+                          roleLabel={t(resolveTaskBlockRole(task) === 'main' ? 'mainRole' : 'supportRole')}
+                          onUpdate={onUpdateTask}
+                          onAddProof={onAddProof}
+                          onStartFocus={onStartFocus}
+                        />
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               ) : null}
             </section>

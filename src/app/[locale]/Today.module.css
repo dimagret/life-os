@@ -368,7 +368,8 @@
   gap: 3px;
 }
 
-.secondarySummaryCopy strong {
+.secondaryTitle {
+  margin: 0;
   color: var(--text-primary);
   font-size: 13px;
   font-weight: 680;

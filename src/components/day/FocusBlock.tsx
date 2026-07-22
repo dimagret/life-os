@@ -6,20 +6,20 @@ import type { ActiveFocusPhase, FocusBlock as FocusBlockType, FocusEarlyExitReas
 import { stripLegacyTodayFromTaskTitle } from '@/lib/utils';
 import { playTimerEndChime } from '@/lib/sound';
 import { hapticsImpactLight } from '@/lib/capacitor/native';
-import { loadActiveFocusSession, loadUserProfile, saveActiveFocusSession } from '@/lib/storage';
+import { loadActiveFocusSession, loadUserProfile, saveActiveFocusSession, saveUserProfile } from '@/lib/storage';
 import {
-  DEFAULT_YANDEX_MUSIC_EMBED_URL,
+  FOCUS_MUSIC_CATALOG,
   fadeOutFocusMusic,
-  openYandexMusicPage,
   pauseFocusMusic,
   playFocusMusic,
   stopFocusMusic,
+  type FocusMusicPreset,
 } from '@/lib/focusMusic';
-import { YandexMusicPlayer } from '@/components/music/YandexMusicPlayer';
 import {
   ArrowLeft,
   CheckCircle2,
   MoreHorizontal,
+  Music2,
   Pause,
   Play,
   RotateCcw,
@@ -214,7 +214,7 @@ function TimerRing({
           cx={center}
           cy={center - orbitR}
           r="5"
-          fill="var(--signal-cyan)"
+          fill="var(--state-color)"
           stroke="var(--surface-card)"
           strokeWidth="2"
         />
@@ -224,9 +224,9 @@ function TimerRing({
           <feGaussianBlur stdDeviation="2.5" />
         </filter>
         <linearGradient id="focusTimerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="var(--signal-cyan)" />
-          <stop offset="52%" stopColor="var(--signal-blue)" />
-          <stop offset="100%" stopColor="var(--accent-brand)" />
+          <stop offset="0%" stopColor="var(--state-color)" />
+          <stop offset="52%" stopColor="var(--state-color)" />
+          <stop offset="100%" stopColor="var(--state-color)" />
         </linearGradient>
       </defs>
     </svg>
@@ -278,6 +278,9 @@ export function FocusBlock({
   const [distractions, setDistractions] = useState<string[]>(initialFocusState.distractions);
   const [showDistractionInput, setShowDistractionInput] = useState(false);
   const [result, setResult] = useState(initialFocusState.result);
+  const [distractionMinutes, setDistractionMinutes] = useState('');
+  const [primaryDistraction, setPrimaryDistraction] = useState<string | undefined>();
+  const [returnAction, setReturnAction] = useState('');
   const [earlyExitReason, setEarlyExitReason] = useState<FocusEarlyExitReason | undefined>(initialFocusState.earlyExitReason);
   const [salvageAction, setSalvageAction] = useState(initialFocusState.salvageAction);
   const [focusMusicProfile, setFocusMusicProfile] = useState<UserProfile | null>(() =>
@@ -308,14 +311,14 @@ export function FocusBlock({
     Boolean(taskDetail?.trim()) &&
     taskDetail!.trim() !== taskTitle.trim() &&
     taskDetail!.trim() !== taskTitleDisplay;
-  const yandexEmbedUrl = focusMusicProfile?.focusYandexEmbedUrl ?? DEFAULT_YANDEX_MUSIC_EMBED_URL;
-  const showYandexPlayerPanel =
+  const focusMusicPreset = FOCUS_MUSIC_CATALOG.includes(focusMusicProfile?.focusMusicPreset as FocusMusicPreset)
+    ? (focusMusicProfile?.focusMusicPreset as FocusMusicPreset)
+    : 'softNoise';
+  const showFocusMusicPanel =
     Boolean(focusMusicProfile?.focusMusicEnabled) &&
-    focusMusicProfile?.focusMusicSource === 'yandex' &&
     (phase === 'running' ||
       phase === 'paused' ||
-      (phase === 'completed' && focusMusicProfile.focusMusicEndBehavior === 'continue'));
-
+      (phase === 'completed' && focusMusicProfile?.focusMusicEndBehavior === 'continue'));
   const idleDisplaySeconds = selectedDuration * 60;
 
   const ringProgress = useMemo(() => {
@@ -443,10 +446,6 @@ export function FocusBlock({
       return;
     }
 
-    if (profile.focusMusicSource === 'yandex') {
-      stopFocusMusic();
-      return;
-    }
 
     if (phase === 'running') {
       void playFocusMusic(profile);
@@ -526,6 +525,10 @@ export function FocusBlock({
   };
 
   const handleComplete = () => {
+    const parsedDistractionMinutes = Number.parseInt(distractionMinutes, 10);
+    const normalizedDistractionMinutes = Number.isFinite(parsedDistractionMinutes)
+      ? Math.min(getRecordedDurationMinutes(), Math.max(0, parsedDistractionMinutes))
+      : undefined;
     const earlyExitPatch = fullDurationHonored
       ? {}
       : {
@@ -543,6 +546,9 @@ export function FocusBlock({
       status: 'completed',
       result,
       fullDurationHonored,
+      distractionMinutes: normalizedDistractionMinutes,
+      primaryDistraction: primaryDistraction ?? distractions[0],
+      returnAction: returnAction.trim(),
       ...earlyExitPatch,
     };
     onComplete(block);
@@ -603,41 +609,51 @@ export function FocusBlock({
     </div>
   );
 
-  const yandexMusicBlock = showYandexPlayerPanel ? (
-    <div className="focus-detail-card mt-6 p-4">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-            {t('yandexMusicTitle')}
-          </p>
-          <p className="mt-1 text-[10px] leading-relaxed text-[var(--text-muted)]">
-            {t('yandexMusicHint')}
-          </p>
-        </div>
-      </div>
-      {yandexEmbedUrl ? (
-        <YandexMusicPlayer url={yandexEmbedUrl} title={t('yandexMusicTitle')} className="mt-3" />
-      ) : (
-        <p className="mt-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] px-3 py-3 text-xs text-[var(--text-muted)]">
-          {t('yandexMusicEmpty')}
+  const handleFocusMusicPresetChange = (preset: FocusMusicPreset) => {
+    if (!focusMusicProfile) return;
+    const nextProfile: UserProfile = {
+      ...focusMusicProfile,
+      focusMusicSource: 'builtin',
+      focusMusicPreset: preset,
+    };
+    saveUserProfile(nextProfile);
+    setFocusMusicProfile(nextProfile);
+    stopFocusMusic();
+    if (phase === 'running') {
+      void playFocusMusic(nextProfile);
+    }
+  };
+
+  const focusMusicBlock = showFocusMusicPanel && focusMusicProfile ? (
+    <div className="focus-detail-card mt-6 flex items-center gap-3 p-3">
+      <span className="inline-flex h-9 w-9 flex-none items-center justify-center rounded-xl border border-[var(--state-border)] bg-[var(--state-soft)] text-[var(--state-color)]">
+        <Music2 className="h-4 w-4" aria-hidden="true" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+          {t('musicTitle')}
         </p>
-      )}
-      <p className="mt-3 text-[10px] leading-relaxed text-[var(--text-muted)]">
-        {t('yandexMusicSlow')}
-      </p>
-      <button
-        type="button"
-        onClick={() => openYandexMusicPage(yandexEmbedUrl)}
-        className="focus-secondary-button mt-3 inline-flex w-full items-center justify-center px-4 text-xs font-medium"
+        <p className="mt-0.5 truncate text-xs font-medium text-[var(--text-primary)]">
+          {t('musicTracks.' + focusMusicPreset)}
+        </p>
+      </div>
+      <label className="sr-only" htmlFor="focus-music-preset">
+        {t('musicSelect')}
+      </label>
+      <select
+        id="focus-music-preset"
+        value={focusMusicPreset}
+        onChange={(event) => handleFocusMusicPresetChange(event.target.value as FocusMusicPreset)}
+        className="tactile-field min-h-10 max-w-[44%] rounded-xl px-2 text-[11px] text-[var(--text-secondary)]"
       >
-        {t('yandexMusicOpenExternal')}
-      </button>
-      <p className="mt-2 text-[10px] leading-relaxed text-[var(--text-muted)]">
-        {t('yandexMusicExternalMode')}
-      </p>
+        {FOCUS_MUSIC_CATALOG.map((preset) => (
+          <option key={preset} value={preset}>
+            {t('musicTracks.' + preset)}
+          </option>
+        ))}
+      </select>
     </div>
   ) : null;
-
   if (phase === 'idle') {
     return (
       <div className="focus-immersive-page flex flex-col">
@@ -656,7 +672,7 @@ export function FocusBlock({
           {centerVisual(idleDisplaySeconds, false)}
 
           <p className="mt-6 mb-3 text-center text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">{t('presets')}</p>
-          <div className="flex flex-wrap justify-center gap-2 mb-3">
+          <div className="focus-preset-grid mb-3">
             {PRESETS.map((m) => (
               <button
                 key={m}
@@ -766,7 +782,7 @@ export function FocusBlock({
 
           {centerVisual(timeLeft, paused)}
 
-          {yandexMusicBlock}
+          {focusMusicBlock}
 
           <div className="focus-control-panel mx-auto mt-10">
             {paused ? (
@@ -857,14 +873,14 @@ export function FocusBlock({
           {headerBlock}
 
           <div className="focus-detail-card mb-6 px-5 py-8 text-center">
-            <CheckCircle2 className="mx-auto mb-4 h-8 w-8 text-[var(--signal-cyan)]" aria-hidden="true" />
+            <CheckCircle2 className="mx-auto mb-4 h-8 w-8 text-[var(--state-color)]" aria-hidden="true" />
             <h2 className="mb-2 text-lg font-semibold text-[var(--text-primary)]">{t('completedTitle')}</h2>
             <p className="text-sm text-[var(--text-secondary)]">
               {t('completedDuration', { minutes: sessionTargetMinutes })}
             </p>
           </div>
 
-          {yandexMusicBlock}
+          {focusMusicBlock}
 
           <div className="flex flex-col gap-3">
             <button
@@ -955,10 +971,67 @@ export function FocusBlock({
                 onChange={(e) => setSalvageAction(e.target.value)}
                 placeholder={t('salvageActionPlaceholder')}
                 rows={2}
-                className="focus-input w-full resize-none p-3 text-sm placeholder:text-[var(--text-disabled)] focus:outline-none focus:border-[var(--signal-cyan)]"
+                className="focus-input w-full resize-none p-3 text-sm placeholder:text-[var(--text-disabled)] focus:outline-none focus:border-[var(--state-color)]"
               />
             </label>
             <p className="text-xs leading-relaxed text-[var(--text-muted)]">{t('salvageActionHint')}</p>
+          </div>
+        ) : null}
+
+        {distractions.length > 0 ? (
+          <div className="focus-detail-card mb-4 space-y-4 p-4">
+            <div>
+              <h2 className="text-sm font-semibold text-[var(--text-primary)]">
+                {t('distractionReflectionTitle')}
+              </h2>
+              <p className="mt-1 text-xs leading-relaxed text-[var(--text-muted)]">
+                {t('distractionReflectionHint')}
+              </p>
+            </div>
+            <label className="block space-y-1.5">
+              <span className="text-xs uppercase tracking-wider text-[var(--text-muted)]">
+                {t('distractionMinutesLabel')}
+              </span>
+              <input
+                type="number"
+                min={0}
+                max={resultDurationMinutes}
+                value={distractionMinutes}
+                onChange={(event) => setDistractionMinutes(event.target.value)}
+                placeholder="0"
+                className="focus-input w-full p-3 text-sm tabular-nums focus:outline-none focus:border-[var(--state-color)]"
+              />
+            </label>
+            <div>
+              <span className="text-xs uppercase tracking-wider text-[var(--text-muted)]">
+                {t('primaryDistractionLabel')}
+              </span>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {Array.from(new Set(distractions)).map((key) => (
+                  <button
+                    key={key}
+                    type="button"
+                    aria-pressed={primaryDistraction === key}
+                    onClick={() => setPrimaryDistraction(key)}
+                    className="focus-mini-button selection-control"
+                  >
+                    {t(`distractions.${key}`)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <label className="block space-y-1.5">
+              <span className="text-xs uppercase tracking-wider text-[var(--text-muted)]">
+                {t('returnActionLabel')}
+              </span>
+              <textarea
+                value={returnAction}
+                onChange={(event) => setReturnAction(event.target.value)}
+                placeholder={t('returnActionPlaceholder')}
+                rows={2}
+                className="focus-input w-full resize-none p-3 text-sm placeholder:text-[var(--text-disabled)] focus:outline-none focus:border-[var(--state-color)]"
+              />
+            </label>
           </div>
         ) : null}
 
@@ -966,7 +1039,7 @@ export function FocusBlock({
           value={result}
           onChange={(e) => setResult(e.target.value)}
           placeholder={t('resultPlaceholder')}
-          className="focus-input mb-4 h-28 w-full resize-none p-4 text-sm placeholder:text-[var(--text-disabled)] focus:outline-none focus:border-[var(--signal-cyan)]"
+          className="focus-input mb-4 h-28 w-full resize-none p-4 text-sm placeholder:text-[var(--text-disabled)] focus:outline-none focus:border-[var(--state-color)]"
         />
 
         <p className="text-xs text-[var(--text-muted)] mb-6">{t('noResultNote')}</p>

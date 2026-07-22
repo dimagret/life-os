@@ -64,7 +64,7 @@ export function TaskCard({ task, roleLabel, onUpdate, onAddProof, onStartFocus }
   const StatusIcon = statusIcons[task.status];
 
   return (
-    <div className="tactile-card p-4">
+    <article className="tactile-card p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <span className="tactile-chip px-2 py-0.5 text-xs leading-snug">
@@ -96,9 +96,9 @@ export function TaskCard({ task, roleLabel, onUpdate, onAddProof, onStartFocus }
       </div>
 
       <div className="mt-3 space-y-3">
-        <h3 className="text-sm font-medium text-[var(--text-primary)] leading-snug">
+        <h5 className="text-sm font-medium text-[var(--text-primary)] leading-snug">
           {stripLegacyTodayFromTaskTitle(task.title)}
-        </h3>
+        </h5>
 
         {isClosed && task.microGoal?.trim() ? (
           <div className="tactile-inset space-y-1.5 p-3">
@@ -223,6 +223,6 @@ export function TaskCard({ task, roleLabel, onUpdate, onAddProof, onStartFocus }
           </div>
         )}
       </div>
-    </div>
+    </article>
   );
 }

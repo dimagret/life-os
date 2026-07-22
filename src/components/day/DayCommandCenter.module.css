@@ -365,8 +365,14 @@
   min-width: 0;
 }
 
-.detailBlock p {
-  margin-top: 4px;
+.detailList {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+}
+
+.detailBlock dd {
+  margin: 4px 0 0;
   color: var(--text-secondary);
   font-size: 12px;
   line-height: 1.55;
@@ -377,6 +383,7 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px 16px;
+  margin: 0;
 }
 
 @media (max-width: 460px) {

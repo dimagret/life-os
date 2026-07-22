@@ -2,10 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
-import { CapacitorBridge } from '@/components/CapacitorBridge';
-import { NetworkBanner } from '@/components/NetworkBanner';
-import { LayoutShell } from '@/components/LayoutShell';
-import { DebugErrorBoundary } from '@/components/DebugErrorBoundary';
+import { AppRouteShell } from '@/components/AppRouteShell';
 import { ShellProvider } from '@/lib/shell-context';
 import { ANTI_FOUC_SCRIPT } from '@/lib/useTheme';
 import { routing } from '@/i18n/routing';
@@ -99,13 +96,7 @@ export default async function LocaleLayout({
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ShellProvider>
-            <CapacitorBridge />
-            <NetworkBanner />
-            <DebugErrorBoundary>
-              <LayoutShell>
-                {children}
-              </LayoutShell>
-            </DebugErrorBoundary>
+            <AppRouteShell>{children}</AppRouteShell>
           </ShellProvider>
         </NextIntlClientProvider>
       </body>

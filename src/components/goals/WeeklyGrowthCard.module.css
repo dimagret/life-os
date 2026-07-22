@@ -1,0 +1,210 @@
+.card {
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 15px;
+  color: var(--text-primary);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-card);
+}
+
+.headingRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.kicker {
+  color: var(--state-color);
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin-top: 3px;
+  font-size: 15px;
+  font-weight: 720;
+  line-height: 1.25;
+}
+
+.summary {
+  margin-top: 7px;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.evidence {
+  flex: 0 0 auto;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  padding: 5px 8px;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.fact {
+  border-color: var(--state-victory-border);
+  color: var(--state-victory);
+  background: var(--state-victory-soft);
+}
+
+.in_progress {
+  border-color: var(--state-border);
+  color: var(--state-color);
+  background: var(--state-soft);
+}
+
+.hypothesis {
+  color: var(--text-muted);
+  background: var(--bg-hover);
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 13px;
+}
+
+.metrics > div {
+  min-width: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 9px 10px;
+  background: var(--surface-inset);
+}
+
+.metrics dt {
+  color: var(--text-muted);
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.metrics dd {
+  overflow: hidden;
+  margin-top: 4px;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 680;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editor {
+  margin-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 11px;
+}
+
+.editor > summary,
+.reflection > summary {
+  cursor: pointer;
+  color: var(--state-color);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.form {
+  display: grid;
+  gap: 11px;
+  margin-top: 12px;
+}
+
+.form label,
+.reflectionFields label {
+  display: grid;
+  gap: 5px;
+}
+
+.form label > span,
+.reflectionFields label > span {
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.form input {
+  min-height: 42px;
+  width: 100%;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 9px 11px;
+  color: var(--text-primary);
+  background: var(--surface-inset);
+  font-size: 13px;
+}
+
+.form input:focus-visible,
+.form button:focus-visible,
+.editor summary:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.reflection {
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.reflection > summary {
+  color: var(--text-secondary);
+}
+
+.reflectionFields {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.form > button {
+  min-height: 44px;
+  border-radius: 11px;
+  padding: 10px 14px;
+  color: var(--text-inverse);
+  background: var(--state-color);
+  font-size: 13px;
+  font-weight: 720;
+  transition: filter 140ms ease, transform 140ms ease;
+}
+
+.form > button:hover:not(:disabled) {
+  filter: brightness(1.04);
+}
+
+.form > button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.form > button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+@media (min-width: 720px) {
+  .metrics {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 460px) {
+  .card {
+    border-radius: 14px;
+    padding: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .form > button {
+    transition: none;
+  }
+}

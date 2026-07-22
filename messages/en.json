@@ -261,6 +261,20 @@
     "start": "Start focus",
     "distractionsCount": "Distractions: {count}",
     "distracted": "I got distracted",
+    "musicTitle": "Focus background",
+    "musicHint": "Sound follows the timer",
+    "musicSelect": "Soundscape",
+    "musicTracks": {
+      "softNoise": "Quiet flow",
+      "deepNoise": "Deep focus",
+      "rain": "Window rain",
+      "airFlow": "Air flow",
+      "lowPulse": "Low pulse",
+      "night": "Night quiet",
+      "kreamLiquidLab": "KREAM — LIQUID LAB Vol. 8",
+      "gioliAndromeda": "Gioli & Assia — Andromeda",
+      "gioliDiesis": "Gioli & Assia — Diesis"
+    },
     "yandexMusicTitle": "Yandex Music",
     "yandexMusicHint": "The player is embedded in the focus session. Control playback right here.",
     "yandexMusicRefresh": "Refresh",
@@ -282,6 +296,12 @@
     "resultTitle": "Block result",
     "resultDuration": "Duration",
     "resultDistractions": "Distractions",
+    "distractionReflectionTitle": "Return to focus",
+    "distractionReflectionHint": "Record only what will improve the next session.",
+    "distractionMinutesLabel": "Approximate minutes lost",
+    "primaryDistractionLabel": "Main distraction",
+    "returnActionLabel": "How you will return",
+    "returnActionPlaceholder": "For example: put the phone away and start with 10 minutes",
     "resultPlaceholder": "What was done during the block?",
     "noResultNote": "Focus without result doesn't count as progress.",
     "earlyExitTitle": "Early exit",
@@ -404,7 +424,52 @@
     "soundToggle": "Sound when timer ends",
     "soundHint": "A short chime and a light haptic tap when the focus timer reaches zero.",
     "focusMusicToggle": "Music during focus",
-    "focusMusicHint": "The default built-in background starts with the timer. Use an external link only for a direct audio file or stream.",
+    "focusSetCatalogTitle": "Music during focus",
+    "focusSetCatalogHint": "Three added local sets. Select a card to preview it.",
+    "focusMusicHint": "Choose a Life OS soundscape. It starts, pauses, and ends together with the focus timer.",
+    "focusCatalogTitle": "Focus catalog",
+    "focusCatalogHint": "Choose a card to select the soundscape and hear it immediately.",
+    "focusCatalogPlaying": "Now playing",
+    "focusCatalogSelected": "Selected",
+    "focusCatalogPreview": "Preview",
+    "focusCatalog": {
+      "softNoise": {
+        "title": "Quiet flow",
+        "description": "Even soft noise with no sharp frequencies"
+      },
+      "deepNoise": {
+        "title": "Deep focus",
+        "description": "Dense low background for demanding work"
+      },
+      "rain": {
+        "title": "Window rain",
+        "description": "A diffused rain layer with no melody"
+      },
+      "airFlow": {
+        "title": "Air flow",
+        "description": "A light stable stream for reading"
+      },
+      "lowPulse": {
+        "title": "Low pulse",
+        "description": "A calm tone with soft overtones"
+      },
+      "night": {
+        "title": "Night quiet",
+        "description": "A very quiet dark background for evenings"
+      },
+      "kreamLiquidLab": {
+        "title": "KREAM — LIQUID LAB Vol. 8",
+        "description": "Electronic set for steady focused work"
+      },
+      "gioliAndromeda": {
+        "title": "Gioli & Assia — Andromeda",
+        "description": "Theater performance with a measured pulse"
+      },
+      "gioliDiesis": {
+        "title": "Gioli & Assia — Diesis",
+        "description": "Live electric handpan set from Etna"
+      }
+    },
     "focusMusicSource": "Source",
     "focusMusicBuiltin": "Built-in background",
     "focusMusicYandexSource": "Yandex Music",
@@ -506,7 +571,39 @@
     "createMonthlyGoal": "Create monthly goal",
     "createWeeklyGoal": "Create weekly goal",
     "recommended": "Recommended",
-    "monthlySecondaryTitle": "Add a monthly direction"
+    "monthlySecondaryTitle": "Add a monthly direction",
+    "weeklyGrowth": {
+      "kicker": "Weekly decision",
+      "title": "Constraint and experiment",
+      "summary": "Life OS collects facts from plans, focus, and reviews. You choose only the next testable move.",
+      "evidence": {
+        "hypothesis": "Hypothesis",
+        "in_progress": "In progress",
+        "fact": "Fact"
+      },
+      "focusMetric": "Focus",
+      "resultMetric": "External facts",
+      "reviewMetric": "Reviewed days",
+      "distractionMetric": "Main distraction",
+      "minutesShort": "min",
+      "noDistraction": "Not recorded",
+      "setDecision": "Set up the week",
+      "editDecision": "Edit decision",
+      "constraint": "Main constraint",
+      "constraintPlaceholder": "What is blocking the result most?",
+      "experiment": "One experiment",
+      "experimentPlaceholder": "What action will test the constraint?",
+      "experimentMetric": "Test signal",
+      "metricPlaceholder": "What will be counted or visible outside?",
+      "commercialAction": "Commercial step",
+      "commercialPlaceholder": "For example: send the offer to 10 clients",
+      "weekResult": "Weekly outcome — optional",
+      "stopDoing": "What to stop",
+      "continueDoing": "What to continue",
+      "nextWeekResult": "Next external result",
+      "save": "Save decision",
+      "saved": "Saved"
+    }
   },
   "goalCard": {
     "activeGoal": "Active goal",
@@ -525,6 +622,10 @@
     "createDayOrder": "Build today",
     "todayPlanReady": "Today’s plan is already created",
     "goToToday": "Go to today's plan",
+    "edit": "Edit",
+    "editGoalLabel": "Weekly goal",
+    "cancelEdit": "Cancel",
+    "saveEdit": "Save",
     "status": {
       "active": "In progress",
       "paused": "On hold",

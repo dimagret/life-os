@@ -6,6 +6,7 @@ export const STORAGE_KEYS = {
   focusBlocks: 'lifeos:focusBlocks',
   activeFocusSession: 'lifeos:activeFocusSession',
   actionCourtReviews: 'lifeos:actionCourtReviews',
+  weeklyGrowthReviews: 'lifeos:weeklyGrowthReviews',
   debts: 'lifeos:debts',
   recoveryQuests: 'lifeos:recoveryQuests',
   knowledgeModules: 'lifeos:knowledgeModules',
@@ -17,4 +18,4 @@ export const STORAGE_KEYS = {
 
 // Bump this when changing the localStorage schema (User/Goal/Task/etc.).
 // Add a corresponding entry to `migrations` in src/lib/migrations.ts.
-export const STORAGE_SCHEMA_VERSION = 2;
+export const STORAGE_SCHEMA_VERSION = 3;

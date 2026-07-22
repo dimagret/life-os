@@ -1,5 +1,6 @@
 'use client';
 
+import { FormEvent, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Goal } from '@/types';
 import { Link } from '@/i18n/navigation';
@@ -10,6 +11,7 @@ import styles from './GoalCard.module.css';
 interface GoalCardProps {
   goal: Goal;
   hasTodayPlan?: boolean;
+  onUpdate?: (patch: Pick<Goal, 'title' | 'externalResult'>) => void;
 }
 
 type GoalStatusPresentation = Goal['status'] | 'closed' | 'unknown';
@@ -45,9 +47,12 @@ function resolveGoalStatus(value: unknown): GoalStatusPresentation {
   }
 }
 
-export function GoalCard({ goal, hasTodayPlan = false }: GoalCardProps) {
+export function GoalCard({ goal, hasTodayPlan = false, onUpdate }: GoalCardProps) {
   const t = useTranslations('goalCard');
   const locale = useLocale();
+  const [isEditing, setIsEditing] = useState(false);
+  const [titleDraft, setTitleDraft] = useState(goal.title);
+  const [externalResultDraft, setExternalResultDraft] = useState(goal.externalResult);
   const horizon = goal.horizon ?? 'weekly';
   const goalStatus = resolveGoalStatus((goal as { status?: unknown }).status);
   const timeline = getGoalDisplayTimeline(goal);
@@ -64,28 +69,61 @@ export function GoalCard({ goal, hasTodayPlan = false }: GoalCardProps) {
     (normalizedTitle.length > 24 && normalizedOriginal.includes(normalizedTitle)) ||
     (normalizedOriginal.length > 24 && normalizedTitle.includes(normalizedOriginal));
 
+  const startEditing = () => {
+    setTitleDraft(goal.title);
+    setExternalResultDraft(goal.externalResult);
+    setIsEditing(true);
+  };
+
+  const cancelEditing = () => {
+    setTitleDraft(goal.title);
+    setExternalResultDraft(goal.externalResult);
+    setIsEditing(false);
+  };
+
+  const saveEditing = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const title = titleDraft.trim();
+    const externalResult = externalResultDraft.trim();
+    if (!title || !externalResult) return;
+
+    onUpdate?.({ title, externalResult });
+    setIsEditing(false);
+  };
+
   return (
     <article className={styles.card}>
       <div className={`flex items-center justify-between gap-2 ${styles.topline}`}>
         <span className={styles.kicker}>
           {t('horizon.' + horizon)}
         </span>
-        <span
-          className={styles.statusChip + ' shrink-0 border ' + GOAL_STATUS_STYLES[goalStatus]}
-        >
-          {t(GOAL_STATUS_KEYS[goalStatus])}
-        </span>
+        <div className={styles.toplineActions}>
+          {onUpdate && goalStatus === 'active' && (
+            <button type="button" className={styles.editButton} onClick={startEditing}>
+              {t('edit')}
+            </button>
+          )}
+          <span
+            className={styles.statusChip + ' shrink-0 border ' + GOAL_STATUS_STYLES[goalStatus]}
+          >
+            {t(GOAL_STATUS_KEYS[goalStatus])}
+          </span>
+        </div>
       </div>
 
-      {!repeatsOriginal && (
-        <h2 className={styles.title}>
-          {goal.title}
-        </h2>
-      )}
+      {!isEditing && (
+        <>
+          {!repeatsOriginal && (
+            <h2 className={styles.title}>
+              {goal.title}
+            </h2>
+          )}
 
-      <p className={styles.description}>
-        {goal.originalInput}
-      </p>
+          <p className={styles.description}>
+            {goal.originalInput}
+          </p>
+        </>
+      )}
 
       {goalStatus === 'active' && (
         <div className="mb-4">
@@ -126,12 +164,45 @@ export function GoalCard({ goal, hasTodayPlan = false }: GoalCardProps) {
         </div>
       )}
 
-      <div className="tactile-inset mb-3 p-3">
-        <span className={styles.insetLabel}>
-          {t('externalResult')}
-        </span>
-        <p className={styles.insetCopy}>{goal.externalResult}</p>
-      </div>
+      {isEditing ? (
+        <form className={styles.editForm} onSubmit={saveEditing}>
+          <label className={styles.editField}>
+            <span className={styles.insetLabel}>{t('editGoalLabel')}</span>
+            <textarea
+              value={titleDraft}
+              onChange={(event) => setTitleDraft(event.target.value)}
+              className={styles.editTextarea}
+              rows={3}
+              required
+            />
+          </label>
+          <label className={styles.editField}>
+            <span className={styles.insetLabel}>{t('externalResult')}</span>
+            <textarea
+              value={externalResultDraft}
+              onChange={(event) => setExternalResultDraft(event.target.value)}
+              className={styles.editTextarea}
+              rows={2}
+              required
+            />
+          </label>
+          <div className={styles.editActions}>
+            <button type="button" className={styles.cancelButton} onClick={cancelEditing}>
+              {t('cancelEdit')}
+            </button>
+            <button type="submit" className={styles.saveButton}>
+              {t('saveEdit')}
+            </button>
+          </div>
+        </form>
+      ) : (
+        <div className="tactile-inset mb-3 p-3">
+          <span className={styles.insetLabel}>
+            {t('externalResult')}
+          </span>
+          <p className={styles.insetCopy}>{goal.externalResult}</p>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 items-start gap-4 mb-4">
         <div>

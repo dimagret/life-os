@@ -27,6 +27,8 @@ import {
   isTaskFinishedForDay,
 } from '@/lib/dayPlan';
 import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow';
+import { AuthenticatedActivation } from '@/components/activation/AuthenticatedActivation';
+import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { useShell } from '@/lib/shell-context';
 import { FocusBlock } from '@/components/day/FocusBlock';
 import { UsefulRest } from '@/components/day/UsefulRest';
@@ -234,7 +236,10 @@ export default function TodayClient() {
   };
 
   if (isLoading) return <PageSkeleton />;
-  if (showOnboarding) return <OnboardingFlow onComplete={handleOnboardingComplete} />;
+  if (showOnboarding) {
+    if (isSupabaseConfigured()) return <AuthenticatedActivation />;
+    return <OnboardingFlow onComplete={handleOnboardingComplete} />;
+  }
 
   if (activeFocusTask) {
     const focusMainMicro = resolveFocusMicroGoal(activeFocusTask);
@@ -358,7 +363,7 @@ export default function TodayClient() {
               </span>
             )}
           </div>
-          <p className={styles.todayDate}>{headerDateLine}</p>
+          <time className={styles.todayDate} dateTime={todayStr}>{headerDateLine}</time>
         </div>
         <div className={styles.stateControl}>
           <StateSwitcher />
@@ -390,7 +395,7 @@ export default function TodayClient() {
       <details className={styles.secondaryDetails}>
         <summary className={styles.secondarySummary}>
           <span className={styles.secondarySummaryCopy}>
-            <strong>{t('secondary.title')}</strong>
+            <h2 className={styles.secondaryTitle}>{t('secondary.title')}</h2>
             <small>{t('secondary.hint')}</small>
           </span>
           <ChevronDown className={styles.secondaryChevron} size={17} aria-hidden="true" />
@@ -408,14 +413,14 @@ export default function TodayClient() {
           {profile && <TodayMetrics profile={profile} debtsCount={debtsCount} />}
 
           {profile && summaryStats.length > 0 && (
-            <div className="stat-strip grid grid-cols-2 gap-2 p-2">
+            <dl className="stat-strip grid grid-cols-2 gap-2 p-2">
               {summaryStats.map((item) => (
                 <div key={`${item.label}-${item.value}`} className="stat-pill px-3 py-2">
-                  <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">{item.label}</p>
-                  <p className="mt-0.5 text-sm font-bold tabular-nums text-[var(--text-primary)]">{item.value}</p>
+                  <dt className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">{item.label}</dt>
+                  <dd className="mt-0.5 text-sm font-bold tabular-nums text-[var(--text-primary)]">{item.value}</dd>
                 </div>
               ))}
-            </div>
+            </dl>
           )}
 
           {showResetConfirm ? (

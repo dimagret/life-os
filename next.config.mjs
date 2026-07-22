@@ -46,6 +46,9 @@ const nextConfig = {
         },
       }),
   reactStrictMode: true,
+  turbopack: {
+    root: process.cwd(),
+  },
   /** Убирает лишний dev-only индикатор «building…» (отдельный от react-dev-overlay). */
   devIndicators: {
     buildActivity: false,

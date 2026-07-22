@@ -30,6 +30,44 @@
   margin-bottom: 12px;
 }
 
+.toplineActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.editButton,
+.cancelButton,
+.saveButton {
+  min-height: 30px;
+  border-radius: 8px;
+  padding: 6px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.editButton,
+.cancelButton {
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  background: var(--surface-card);
+}
+
+.saveButton {
+  border: 1px solid color-mix(in srgb, var(--state-color) 76%, var(--border-strong));
+  color: var(--text-inverse);
+  background: var(--state-color);
+}
+
+.editButton:focus-visible,
+.cancelButton:focus-visible,
+.saveButton:focus-visible,
+.editTextarea:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
 .kicker {
   color: var(--state-color);
   font-size: 10px;
@@ -84,6 +122,39 @@
   text-wrap: pretty;
 }
 
+.editForm {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 12px;
+  border: 1px solid var(--state-border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--state-soft) 46%, var(--surface-card));
+}
+
+.editField {
+  display: grid;
+  gap: 5px;
+}
+
+.editTextarea {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid var(--border-subtle);
+  border-radius: 9px;
+  padding: 9px 10px;
+  color: var(--text-primary);
+  background: var(--surface-card);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.editActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
 .realismScore {
   display: inline-block;
   margin-left: 3px;
